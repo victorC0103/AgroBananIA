@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}BanaIA{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="{% url 'core:home' %}" class="logo" style="text-decoration:none"><span>AgroBanan</span>IA</a>
+      <ul class="nav-links">
+        <li><a href="{% url 'core:home' %}#inicio">Inicio</a></li>
+        <li><a href="{% url 'core:home' %}#caracteristicas">Características</a></li>
+        <li><a href="{% url 'core:home' %}#como-funciona">Cómo Funciona</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+      
+      <!-- Conditional Navbar Button based on Authentication -->
+      {% if user.is_authenticated %}
+        <div class="user-menu">
+          <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span class="username">{{ user.first_name|default:user.username }}</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="dropdown-menu">
+            <a href="{% url 'core:dashboard' %}" class="dropdown-item">
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{% url 'core:perfil' %}" class="dropdown-item">
+              <i class="fas fa-cog"></i> Configuración
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'security:logout' %}" class="dropdown-item logout">
+              <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <a href="{% url 'security:login' %}" class="nav-btn">Iniciar Sesión</a>
+      {% endif %}
+      
+      <div class="mobile-menu">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+
+    <!-- Breadcrumb (Nuevo) -->
+    {% block breadcrumb %}{% endblock %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="contacto">
+      <div class="footer-content">
+        <div>
+          <h3>AgroBananIA</h3>
+          <p>
+            IA avanzada para proteger, monitorear y mejorar tus cultivos de
+            banano. Tecnología al servicio del agro.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div>
+          <h3>Enlaces Rápidos</h3>
+          <a href="{% url 'core:home' %}#inicio">Inicio</a><br />
+          <a href="{% url 'core:home' %}#caracteristicas">Características</a><br />
+          <a href="{% url 'core:home' %}#como-funciona">Cómo Funciona</a><br />
+          <a href="#contacto">Contacto</a>
+        </div>
+        <div>
+          <h3>Contacto</h3>
+          <p><i class="fas fa-envelope"></i> contacto@agrobanania.tech</p>
+          <p><i class="fas fa-phone-alt"></i> +593 987 654 321</p>
+          <p><i class="fas fa-map-marker-alt"></i> Guayas, Ecuador</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; 2025 <strong>AgroBananIA</strong>. Todos los derechos
+          reservados.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Toggle user dropdown menu
+      document.addEventListener('DOMContentLoaded', function() {
+        const userMenu = document.querySelector('.user-menu');
+        if (userMenu) {
+          const userInfo = userMenu.querySelector('.user-info');
+          const dropdownMenu = userMenu.querySelector('.dropdown-menu');
+          
+          userInfo.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+          });
+          
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function() {
+            dropdownMenu.classList.remove('show');
+          });
+        }
+        
+        // Mobile menu toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (mobileMenu) {
+          mobileMenu.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+          });
+        }
+      });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

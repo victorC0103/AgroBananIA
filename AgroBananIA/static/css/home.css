@@ -1,0 +1,723 @@
+/* ========================================
+   HOME.CSS - Página de inicio AgroBananIA
+   ======================================== */
+
+.home {
+  --leaf-900: #0f2a17;
+  --leaf-800: #163a20;
+  --leaf-600: #2f6b3a;
+  --leaf-400: #6fb33f;
+  --banana: #f5c400;
+  --banana-soft: #fff4c2;
+  --cream: #f7f3e8;
+  --ink: #18221b;
+  --muted: #5d6b60;
+  --line: rgba(24, 34, 27, 0.1);
+  --radius: 18px;
+  --display: 'Fraunces', Georgia, serif;
+  --body: 'Manrope', 'Segoe UI', sans-serif;
+
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--cream);
+}
+
+.home h1,
+.home h2,
+.home h3 {
+  font-family: var(--display);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+/* El footer global trae margen superior; aquí el CTA ya separa */
+.footer {
+  margin-top: 0;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+.h-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.h-btn i {
+  transition: transform 0.2s ease;
+}
+
+.h-btn:hover i {
+  transform: translateX(4px);
+}
+
+.h-btn-primary {
+  background: var(--banana);
+  color: var(--leaf-900);
+  box-shadow: 0 10px 30px -10px rgba(245, 196, 0, 0.7);
+}
+
+.h-btn-primary:hover {
+  transform: translateY(-2px);
+  background: #ffd21f;
+}
+
+.h-btn-ghost {
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+}
+
+.h-btn-ghost:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.h-btn-dark {
+  background: var(--leaf-900);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.h-btn-dark:hover {
+  transform: translateY(-2px);
+  background: var(--leaf-800);
+}
+
+.h-btn:focus-visible {
+  outline: 3px solid var(--banana);
+  outline-offset: 3px;
+}
+
+/* ========================================
+   HERO
+   ======================================== */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--leaf-900);
+  color: #fff;
+  padding: 5rem 5% 6rem;
+  min-height: min(calc(100vh - var(--navbar-height, 70px)), 860px);
+  display: flex;
+  align-items: center;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 70% at 85% 30%, rgba(111, 179, 63, 0.35), transparent 60%),
+    radial-gradient(40% 50% at 10% 100%, rgba(245, 196, 0, 0.18), transparent 70%),
+    linear-gradient(160deg, var(--leaf-800), var(--leaf-900) 60%);
+}
+
+/* Textura sutil de nervaduras */
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.025) 0 2px,
+    transparent 2px 46px
+  );
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 4rem;
+  align-items: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--banana);
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--banana);
+}
+
+.lead {
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 34rem;
+  margin-bottom: 2.25rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.25rem;
+}
+
+.hero-trust {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hero-trust i {
+  color: var(--leaf-400);
+  margin-right: 0.35rem;
+}
+
+.hero-copy {
+  animation: rise 0.8s ease-out both;
+}
+
+/* ---------- Tarjeta de diagnóstico ---------- */
+.scan-card {
+  background: #fff;
+  color: var(--ink);
+  border-radius: 22px;
+  padding: 1.25rem;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
+  transform: rotate(1.5deg);
+  animation: rise 0.9s 0.15s ease-out both;
+  max-width: 400px;
+  justify-self: end;
+  width: 100%;
+}
+
+.scan-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.scan-time {
+  margin-left: auto;
+}
+
+.scan-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+}
+
+.scan-leaf {
+  position: relative;
+  height: 150px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e7f2dc, #cfe6b8);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.scan-leaf > i {
+  font-size: 6.5rem;
+  color: var(--leaf-600);
+  transform: rotate(-20deg);
+}
+
+.spot {
+  position: absolute;
+  width: 12px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d9a400;
+  box-shadow: 0 0 0 3px rgba(217, 164, 0, 0.25);
+}
+
+.s1 { top: 42%; left: 44%; }
+.s2 { top: 55%; left: 52%; transform: rotate(30deg); }
+.s3 { top: 36%; left: 56%; width: 9px; }
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--banana);
+  box-shadow: 0 0 18px 4px rgba(245, 196, 0, 0.55);
+  animation: scan 2.8s ease-in-out infinite;
+}
+
+.scan-result {
+  border-left: 3px solid #e0a800;
+  background: var(--banana-soft);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.scan-result strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.25rem;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scan-conf .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+
+.scan-conf .value {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--leaf-600);
+}
+
+.bar {
+  height: 8px;
+  border-radius: 99px;
+  background: #e9eee6;
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--leaf-600), var(--leaf-400));
+  animation: fill 1.4s 0.6s ease-out both;
+}
+
+.scan-probs {
+  list-style: none;
+  margin: 0.9rem 0;
+  font-size: 0.85rem;
+}
+
+.scan-probs li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.scan-rec {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  background: #f1f6ee;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+}
+
+.scan-rec i {
+  color: var(--leaf-600);
+  margin-top: 0.2rem;
+}
+
+/* ========================================
+   FRANJA DE DATOS
+   ======================================== */
+.facts {
+  max-width: 1200px;
+  margin: -3rem auto 0;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 50px -25px rgba(15, 42, 23, 0.35);
+  width: 90%;
+}
+
+.fact {
+  padding: 1.75rem 1.5rem;
+  border-right: 1px solid var(--line);
+}
+
+.fact:last-child {
+  border-right: 0;
+}
+
+.fact strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--leaf-800);
+  line-height: 1.1;
+}
+
+.fact span {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ========================================
+   SECCIONES GENÉRICAS
+   ======================================== */
+.diseases,
+.features,
+.how {
+  padding: 6.5rem 5%;
+}
+
+.sec-head {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.sec-head h2 {
+  font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+  font-weight: 700;
+  max-width: 22ch;
+}
+
+.kicker {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--leaf-600);
+  margin-bottom: 0.9rem;
+}
+
+/* ========================================
+   ENFERMEDADES
+   ======================================== */
+.disease-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.disease {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.6rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.disease:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px -24px rgba(15, 42, 23, 0.4);
+}
+
+.disease h3 {
+  font-size: 1.4rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.disease p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.disease-ok {
+  background: var(--leaf-800);
+  border-color: var(--leaf-800);
+  color: #fff;
+}
+
+.disease-ok p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 99px;
+}
+
+.tag-high { background: #fde4e1; color: #a1261b; }
+.tag-mid  { background: var(--banana-soft); color: #7a5b00; }
+.tag-low  { background: #e6eefb; color: #2f4f8a; }
+.tag-ok   { background: rgba(111, 179, 63, 0.2); color: #b9e59a; }
+
+/* ========================================
+   CARACTERÍSTICAS
+   ======================================== */
+.features {
+  background: #fff;
+}
+
+.feature-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+}
+
+.feature {
+  padding: 2rem 2rem 2rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.f-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--cream);
+  color: var(--leaf-600);
+  font-size: 1.15rem;
+  margin-bottom: 1.1rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.feature:hover .f-icon {
+  background: var(--banana);
+  color: var(--leaf-900);
+}
+
+.feature h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.feature p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ========================================
+   CÓMO FUNCIONA
+   ======================================== */
+.how {
+  background: var(--leaf-900);
+  color: #fff;
+}
+
+.sec-head-light .kicker {
+  color: var(--banana);
+}
+
+.steps {
+  list-style: none;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  counter-reset: none;
+}
+
+.step {
+  position: relative;
+  padding: 2rem;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.step-n {
+  display: block;
+  font-family: var(--display);
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: var(--banana);
+  line-height: 1;
+  margin-bottom: 1.25rem;
+}
+
+.step h3 {
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.step p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+/* ========================================
+   CTA
+   ======================================== */
+.cta {
+  max-width: 1200px;
+  width: 90%;
+  margin: 5rem auto;
+  padding: 3rem;
+  border-radius: 24px;
+  background: var(--banana);
+  color: var(--leaf-900);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.cta h2 {
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.cta p {
+  font-weight: 500;
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(30px); }
+}
+
+@keyframes scan {
+  0%, 100% { top: 8%; }
+  50% { top: 90%; }
+}
+
+@keyframes fill {
+  from { width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home *,
+  .home *::before,
+  .home *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 1024px) {
+  .hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+  .scan-card {
+    justify-self: start;
+  }
+  .disease-grid,
+  .feature-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .fact:nth-child(2) {
+    border-right: 0;
+  }
+  .fact:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 3.5rem 16px 5rem;
+  }
+  .diseases,
+  .features,
+  .how {
+    padding: 4.5rem 16px;
+  }
+  .disease-grid,
+  .feature-list,
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .feature {
+    padding-right: 0;
+  }
+  .cta {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem;
+    width: calc(100% - 32px);
+  }
+  .facts {
+    width: calc(100% - 32px);
+  }
+  .scan-card {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .facts {
+    grid-template-columns: 1fr;
+  }
+  .fact {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .fact:last-child {
+    border-bottom: 0;
+  }
+  .hero-actions .h-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

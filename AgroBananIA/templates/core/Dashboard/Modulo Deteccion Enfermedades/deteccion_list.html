@@ -1,0 +1,278 @@
+{% extends 'components/base_dashboard.html' %}
+{% load static agro_tags %}
+{% block title %}Detección de Enfermedades - AgroBananIA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core/Dashboard/Modulo Deteccion Enfermedades/deteccion_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="detection-dashboard">
+  
+  <!-- Hero Header with Stats -->
+  <div class="hero-header">
+    {% url 'core:deteccion_analizar' as analizar_url %}
+    {% include 'includes/page_header.html' with title="Detección de enfermedades" subtitle="Historial de diagnósticos de tus hojas de banano" eyebrow="Módulo de IA" icon="search" action_url=analizar_url action_label="Nuevo análisis" %}
+
+    <!-- Stats Cards -->
+    {% if page_obj %}
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total de análisis</span>
+          <span class="stat-value">{{ stats_total }}</span>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Hojas sanas</span>
+          <span class="stat-value">{{ stats_sanas }}</span>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Con enfermedad</span>
+          <span class="stat-value">{{ stats_enfermas }}</span>
+        </div>
+      </div>
+      <div class="stat-card info">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Último análisis</span>
+          <span class="stat-value stat-value-sm">{{ stats_ultimo.fecha_analisis|date:"d/m/Y"|default:"—" }}</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+
+  <!-- Main Content -->
+  {% if page_obj and page_obj.object_list %}
+    
+    <!-- Analysis Grid -->
+    <div class="analysis-grid-modern">
+      {% for analisis_item in page_obj %}
+        <div class="analysis-card-modern">
+          <!-- Card Header -->
+          <div class="card-header-modern">
+            <div class="disease-info">
+              <div class="disease-icon {{ analisis_item.enfermedad_detectada|severidad }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M2 12h20"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+              <div class="disease-details">
+                <h3 class="disease-name">{{ analisis_item.enfermedad_detectada|nombre_es }}</h3>
+                <span class="analysis-id">ID: #{{ analisis_item.id|stringformat:"04d" }}</span>
+              </div>
+            </div>
+            
+            <div class="probability-badge {% if analisis_item.probabilidad >= 75 %}high{% elif analisis_item.probabilidad >= 50 %}medium{% else %}low{% endif %}">
+              <div class="probability-circle">
+                <svg width="50" height="50" viewBox="0 0 50 50">
+                  <circle cx="25" cy="25" r="20" fill="none" stroke="#E5E7EB" stroke-width="4"/>
+                  <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4" 
+                          stroke-dasharray="{{ analisis_item.probabilidad|floatformat:0|add:",100" }}" 
+                          stroke-dashoffset="25" 
+                          transform="rotate(-90 25 25)"/>
+                </svg>
+                <div class="probability-value">
+                  <span class="value-number">{{ analisis_item.probabilidad|floatformat:0 }}</span>
+                  <span class="value-unit">%</span>
+                </div>
+              </div>
+              <span class="probability-label">Confianza</span>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body-modern">
+            <div class="info-row">
+              <div class="info-item">
+                <div class="info-icon-wrapper blue">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <div class="info-text">
+                  <span class="info-label">Fecha de Análisis</span>
+                  <span class="info-value">{{ analisis_item.fecha_analisis|date:"d/m/Y" }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-icon-wrapper green">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M2 12h20"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </div>
+                <div class="info-text">
+                  <span class="info-label">Plantación</span>
+                  <span class="info-value">{{ analisis_item.imagen.plantacion.nombre_finca|truncatechars:20 }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar {{ analisis_item.enfermedad_detectada|severidad }}">
+              <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">{{ analisis_item.enfermedad_detectada|severidad_texto }}</span>
+              </div>
+              <span class="status-time">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                hace {{ analisis_item.fecha_analisis|timesince }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="card-footer-modern">
+            <a href="{% url 'core:deteccion_detalle' analisis_item.id %}" class="btn-view-details">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Ver Detalles Completos
+            </a>
+            
+            {% comment %} <div class="action-buttons">
+              <button class="btn-icon" title="Descargar reporte">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </button>
+              <button class="btn-icon" title="Compartir">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"/>
+                  <circle cx="6" cy="12" r="3"/>
+                  <circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              </button>
+            </div> {% endcomment %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination Modern -->
+    <div class="pagination-modern">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Mostrando 
+          <span class="highlight">{{ page_obj.start_index }}</span> - 
+          <span class="highlight">{{ page_obj.end_index }}</span> 
+          de 
+          <span class="highlight">{{ page_obj.paginator.count }}</span> 
+          análisis
+        </span>
+      </div>
+
+      <div class="pagination-controls">
+        {% if page_obj.has_previous %}
+          <a href="?page=1" class="pagination-btn" title="Primera página">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="11 17 6 12 11 7"/>
+              <polyline points="18 17 13 12 18 7"/>
+            </svg>
+          </a>
+          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn" title="Página anterior">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </a>
+        {% endif %}
+
+        <div class="page-numbers">
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <span class="page-number active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?page={{ num }}" class="page-number">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn" title="Página siguiente">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+          <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn" title="Última página">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="13 17 18 12 13 7"/>
+              <polyline points="6 17 11 12 6 7"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  {% else %}
+    
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+          <path d="M11 8v6"/>
+          <path d="M8 11h6"/>
+        </svg>
+      </div>
+      <h2 class="empty-state-title">No hay análisis realizados</h2>
+      <p class="empty-state-description">
+        Comienza a monitorear la salud de tus plantaciones realizando tu primer análisis de detección de enfermedades. 
+        El sistema utilizará IA para identificar posibles problemas en tus cultivos.
+      </p>
+      <div class="empty-state-actions">
+        <a href="{% url 'core:deteccion_analizar' %}" class="btn-primary large">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+            <path d="M11 8v6"/>
+            <path d="M8 11h6"/>
+          </svg>
+          Realizar Primer Análisis
+        </a>
+        <button class="btn-secondary large">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+          </svg>
+          Ver Guía de Uso
+        </button>
+      </div>
+    </div>
+
+  {% endif %}
+</div>
+
+<script src="{% static 'js/core/Dashboard/Deteccion de Enfermedades/deteccion_list.js' %}"></script>
+{% endblock %}

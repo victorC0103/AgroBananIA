@@ -1,0 +1,273 @@
+{% extends 'components/base.html' %} {% load static %} {% block title %}Iniciar sesión | AgroBananIA{% endblock %} {% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" />
+<link rel="stylesheet" href="{% static 'css/security/auth/login.css' %}?v=2" />
+{% endblock %} {% block content %}
+<div class="login-page">
+  <div class="login-container">
+    <!-- Side Panel -->
+    <div class="side-panel">
+      <div class="side-content">
+        <span class="side-kicker"><i class="fas fa-seedling"></i> AgroBananIA</span>
+        <h2>Cuida cada hoja de tu plantación.</h2>
+        <p>Diagnóstico de enfermedades con inteligencia artificial, registros de campo y alertas de tu comunidad en un solo lugar.</p>
+        <ul class="side-list">
+          <li><i class="fas fa-check"></i> Sigatoka, Moko, Mal de Panamá y plagas</li>
+          <li><i class="fas fa-check"></i> Recomendaciones de manejo al instante</li>
+          <li><i class="fas fa-check"></i> Avisos de brotes cercanos</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="form-panel">
+      <!-- Display Messages -->
+      {% if messages %}
+      <div class="messages-container">
+        {# Mostrar únicamente mensajes de error #}
+        {% for message in messages %}
+          {% if 'error' in message.tags %}
+            <div class="alert alert-{{ message.tags }}">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ message }}
+        </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Toggle Buttons -->
+      <div class="toggle-btns">
+        <button
+          class="toggle-btn {% if not show_register %}active{% endif %}"
+          onclick="showForm('login')"
+        >
+          Iniciar Sesión
+        </button>
+        <button
+          class="toggle-btn {% if show_register %}active{% endif %}"
+          onclick="showForm('register')"
+        >
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div
+        id="loginForm"
+        class="form-container {% if not show_register %}active{% endif %}"
+      >
+        <div class="form-header">
+          <h3>¡Bienvenido de nuevo!</h3>
+          <p>Ingresa tus credenciales para continuar</p>
+        </div>
+
+        <form method="post" action="{% url 'security:login' %}">
+          {% csrf_token %}
+          <input type="hidden" name="login_submit" value="1" />
+
+          <div class="form-group">
+            <label for="{{ login_form.username.id_for_label }}"
+              >Usuario o Correo Electrónico</label
+            >
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              {{ login_form.username }}
+            </div>
+            {% if login_form.username.errors %}
+            <span class="error-text">{{ login_form.username.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ login_form.password.id_for_label }}"
+              >Contraseña</label
+            >
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              {{ login_form.password }}
+              <span
+                class="password-toggle"
+                onclick="togglePassword('{{ login_form.password.id_for_label }}')"
+              >
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            {% if login_form.password.errors %}
+            <span class="error-text">{{ login_form.password.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+          </button>
+        </form>
+        <div class="form-footer">
+          ¿No tienes una cuenta?
+          <a href="#" onclick="showForm('register'); return false;"
+            >Regístrate aquí</a
+          >
+        </div>
+      </div>
+      <div
+        id="registerForm"
+        class="form-container {% if show_register %}active{% endif %}"
+      >
+        <div class="form-header">
+          <h3>Crear una cuenta</h3>
+          <p>Únete a la revolución agrícola digital</p>
+        </div>
+
+        <form method="post" action="{% url 'security:login' %}">
+          {% csrf_token %}
+          <input type="hidden" name="register_submit" value="1" />
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="{{ register_form.first_name.id_for_label }}"
+                  >Nombre</label
+                >
+                <div class="input-wrapper">
+                  <i class="fas fa-user"></i>
+                  {{ register_form.first_name }}
+                </div>
+                {% if register_form.first_name.errors %}
+                <span class="error-text"
+                  >{{ register_form.first_name.errors.0 }}</span
+                >
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-col">
+              <div class="form-group">
+                <label for="{{ register_form.last_name.id_for_label }}"
+                  >Apellido</label
+                >
+                <div class="input-wrapper">
+                  <i class="fas fa-user"></i>
+                  {{ register_form.last_name }}
+                </div>
+                {% if register_form.last_name.errors %}
+                <span class="error-text"
+                  >{{ register_form.last_name.errors.0 }}</span
+                >
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ register_form.username.id_for_label }}"
+              >Nombre de Usuario</label
+            >
+            <div class="input-wrapper">
+              <i class="fas fa-user-circle"></i>
+              {{ register_form.username }}
+            </div>
+            {% if register_form.username.errors %}
+            <span class="error-text"
+              >{{ register_form.username.errors.0 }}</span
+            >
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ register_form.email.id_for_label }}"
+              >Correo Electrónico</label
+            >
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              {{ register_form.email }}
+            </div>
+            {% if register_form.email.errors %}
+            <span class="error-text">{{ register_form.email.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="{{ register_form.password1.id_for_label }}"
+                  >Contraseña</label
+                >
+                <div class="input-wrapper">
+                  <i class="fas fa-lock"></i>
+                  {{ register_form.password1 }}
+                </div>
+                {% if register_form.password1.errors %}
+                <span class="error-text"
+                  >{{ register_form.password1.errors.0 }}</span
+                >
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-col">
+              <div class="form-group">
+                <label for="{{ register_form.password2.id_for_label }}"
+                  >Confirmar Contraseña</label
+                >
+                <div class="input-wrapper">
+                  <i class="fas fa-lock"></i>
+                  {{ register_form.password2 }}
+                </div>
+                {% if register_form.password2.errors %}
+                <span class="error-text"
+                  >{{ register_form.password2.errors.0 }}</span
+                >
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Crear Cuenta
+          </button>
+        </form>
+        <div class="form-footer">
+          ¿Ya tienes una cuenta?
+          <a href="#" onclick="showForm('login'); return false;"
+            >Inicia sesión aquí</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function showForm(formType) {
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+    const toggleBtns = document.querySelectorAll(".toggle-btn");
+
+    if (formType === "login") {
+      loginForm.classList.add("active");
+      registerForm.classList.remove("active");
+      toggleBtns[0].classList.add("active");
+      toggleBtns[1].classList.remove("active");
+    } else {
+      registerForm.classList.add("active");
+      loginForm.classList.remove("active");
+      toggleBtns[1].classList.add("active");
+      toggleBtns[0].classList.remove("active");
+    }
+  }
+
+  function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = input.parentElement.querySelector(".password-toggle i");
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+</script>
+{% endblock %}

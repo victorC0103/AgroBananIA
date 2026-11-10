@@ -1,0 +1,5 @@
+{% if field.field.widget.input_type == 'text' or field.field.widget.input_type == 'number' %}
+    {{ field }}
+{% else %}
+    {{ field }}
+{% endif %}

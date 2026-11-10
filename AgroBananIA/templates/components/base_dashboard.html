@@ -1,0 +1,400 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}Dashboard Modular - Plantación de Banano{% endblock %}
+    </title>
+    <link
+      rel="stylesheet"
+      href="{% static 'css/core/Dashboard/base_dashboard.css' %}"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    />
+
+    {% block extra_css %}{% endblock %}
+
+    <!-- Capa común: se carga al final para unificar el diseño de todos los módulos -->
+    <link
+      rel="stylesheet"
+      href="{% static 'css/core/Dashboard/theme.css' %}?v=1"
+    />
+  </head>
+  <body>
+    <!-- Mobile Menu Button -->
+    <button
+      class="mobile-menu-btn"
+      aria-label="Abrir menú"
+      onclick="toggleMobileSidebar()"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div
+      class="sidebar-overlay"
+      onclick="toggleMobileSidebar()"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Barra lateral principal">
+      <button
+        class="sidebar-toggle"
+        aria-expanded="true"
+        onclick="toggleSidebar()"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <div class="logo" role="img" aria-label="AgroBananIA">
+        <div class="logo-icon">AB</div>
+        <span class="logo-text">AgroBananIA</span>
+      </div>
+
+      <nav class="nav" role="navigation" aria-label="Navegación principal">
+        <div class="nav-section">
+          <a
+            class="nav-item {% if active_module == 'inicio' %}active{% endif %}"
+            href="{% url 'core:dashboard' %}"
+            data-module="inicio"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+            </div>
+            <span>Inicio</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">Módulos</div>
+
+          <a
+            class="nav-item {% if active_module == 'deteccion' %}active{% endif %}"
+            href="{% url 'core:deteccion_list' %}"
+            data-module="deteccion"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+                <path d="M11 8v6" />
+                <path d="M8 11h6" />
+              </svg>
+            </div>
+            <span>Detección de Enfermedades</span>
+          </a>
+
+          <a
+            class="nav-item {% if active_module == 'datos' %}active{% endif %}"
+            href="{% url 'core:gestion_campo' %}"
+            data-module="datos"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M18 20V10" />
+                <path d="M12 20V4" />
+                <path d="M6 20v-6" />
+              </svg>
+            </div>
+            <span>Gestión de Campo</span>
+          </a>
+
+          <a
+            class="nav-item {% if active_module == 'recomendaciones' %}active{% endif %}"
+            href="{% url 'core:recomendaciones' %}"
+            data-module="recomendaciones"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4" />
+                <path d="M12 8h.01" />
+              </svg>
+            </div>
+            <span>Recomendaciones</span>
+          </a>
+
+          {% comment %}
+          <a
+            class="nav-item {% if active_module == 'informes' %}active{% endif %}"
+            href="#"
+            data-module="informes"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </div>
+            <span>Informes</span>
+          </a>
+          {% endcomment %}
+
+          <a
+            class="nav-item {% if active_module == 'estadisticas' %}active{% endif %}"
+            href="{% url 'core:estadisticas' %}"
+            data-module="estadisticas"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <span>Estadísticas</span>
+          </a>
+
+          <a
+            class="nav-item {% if active_module == 'alertas-comunitarias' %}active{% endif %}"
+            href="{% url 'core:alertas' %}"
+            data-module="alertas-comunitarias"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </div>
+            <span>Alertas Comunitarias</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-title">Administración</div>
+
+        
+          <a
+            class="nav-item {% if active_module == 'admin' %}active{% endif %}"
+            href="{% url 'core:perfil'%}"
+            data-module="admin"
+          >
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
+              </svg>
+            </div>
+            <span>Configuración</span>
+          </a>
+          
+
+          <a class="nav-item" href="{% url 'security:logout' %}">
+            <div class="nav-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </div>
+            <span>Cerrar sesión</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper" id="mainWrapper">
+      <!-- Main Content Area -->
+      <div class="main-content">
+        {% block content %}
+        <!-- Aquí puedes insertar el contenido de cada módulo -->
+        {% endblock %}
+      </div>
+    </div>
+
+    <script>
+      // Función para colapsar/expandir sidebar
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const mainWrapper = document.getElementById("mainWrapper");
+        const isCollapsed = sidebar.classList.toggle("collapsed");
+        mainWrapper.classList.toggle("expanded");
+
+        // Guardar estado en localStorage
+        localStorage.setItem("sidebarCollapsed", isCollapsed);
+
+        // Agregar atributo aria para accesibilidad
+        sidebar.setAttribute("aria-expanded", !isCollapsed);
+      }
+
+      // Función para sidebar móvil
+      function toggleMobileSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.querySelector(".sidebar-overlay");
+        const isOpen = sidebar.classList.toggle("mobile-open");
+        overlay.classList.toggle("active");
+
+        // Prevenir scroll del body
+        document.body.style.overflow = isOpen ? "hidden" : "";
+
+        // Gestionar foco para accesibilidad
+        if (isOpen) {
+          sidebar.querySelector(".nav-item")?.focus();
+        }
+      }
+
+      // Inicialización
+      document.addEventListener("DOMContentLoaded", function () {
+        // Restaurar estado del sidebar
+        const sidebarCollapsed =
+          localStorage.getItem("sidebarCollapsed") === "true";
+        if (sidebarCollapsed && window.innerWidth > 768) {
+          toggleSidebar();
+        }
+
+        // Agregar tooltips a nav-items en modo colapsado
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+          const text = item.querySelector(
+            "span:not(.nav-icon span)"
+          )?.textContent;
+          if (text) {
+            item.setAttribute("data-tooltip", text.trim());
+          }
+
+          // Cerrar sidebar móvil al hacer clic en un link
+          item.addEventListener("click", function () {
+            if (window.innerWidth <= 768) {
+              toggleMobileSidebar();
+            }
+          });
+        });
+
+        // Soporte para teclas de accesibilidad
+        document.addEventListener("keydown", function (e) {
+          // Escape para cerrar sidebar móvil
+          if (e.key === "Escape" && window.innerWidth <= 768) {
+            const sidebar = document.getElementById("sidebar");
+            if (sidebar.classList.contains("mobile-open")) {
+              toggleMobileSidebar();
+            }
+          }
+        });
+      });
+
+      // Cerrar sidebar móvil al redimensionar
+      window.addEventListener("resize", function () {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.querySelector(".sidebar-overlay");
+
+        if (window.innerWidth > 768) {
+          sidebar.classList.remove("mobile-open");
+          overlay.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+      });
+
+      // Detección de tema del sistema
+      function detectSystemTheme() {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+        prefersDark.addEventListener("change", (e) => {
+          console.log("Theme changed to:", e.matches ? "dark" : "light");
+          // Aquí puedes agregar lógica adicional si necesitas
+        });
+      }
+
+      detectSystemTheme();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

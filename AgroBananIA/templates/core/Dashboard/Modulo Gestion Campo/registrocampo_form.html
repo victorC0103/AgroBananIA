@@ -1,0 +1,564 @@
+{% extends 'components/base_dashboard.html' %} 
+{% load static %} 
+
+{% block title %}Nuevo Registro de Campo - AgroBananIA{% endblock %} 
+{% block breadcrumb %}Gestión de Campo{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core/Dashboard/Modulo_Gestion_campo/registrocampo_form.css' %}">
+{% endblock %} 
+
+{% block content %}
+
+{% url 'core:gestion_campo' as gestion_url %}
+{% if object %}
+{% include 'includes/page_header.html' with title="Editar registro de campo" subtitle="Actualiza las condiciones y labores registradas" eyebrow="Gestión de campo" icon="clipboard" back_url=gestion_url back_label="Volver a registros" %}
+{% else %}
+{% include 'includes/page_header.html' with title="Nuevo registro de campo" subtitle="Registra clima, suelo y labores realizadas en tu plantación" eyebrow="Gestión de campo" icon="clipboard" back_url=gestion_url back_label="Volver a registros" %}
+{% endif %}
+
+<!-- Main Container -->
+<div class="main-container">
+  
+  <!-- Progress Tracker -->
+  <div class="progress-tracker">
+    <div class="progress-header">
+      <div class="progress-info">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Progreso del formulario</span>
+      </div>
+      <div class="progress-percentage">
+        <span id="progressPercentage">0</span>%
+      </div>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-steps">
+      <div class="step-item active" data-step="1">
+        <div class="step-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <span>General</span>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+          </svg>
+        </div>
+        <span>Clima</span>
+      </div>
+      <div class="step-item" data-step="3">
+        <div class="step-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+        </div>
+        <span>Suelo</span>
+      </div>
+      <div class="step-item" data-step="4">
+        <div class="step-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <span>Prácticas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if form.errors %}
+    <div class="alert alert-danger">
+      <strong>⚠️ Errores en el formulario:</strong>
+      <ul>
+        {% for field in form %}
+          {% if field.errors %}
+          <li><strong>{{ field.label }}:</strong> {{ field.errors|striptags }}</li>
+          {% endif %}
+        {% endfor %}
+        {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    <form method="post" id="fieldForm" novalidate>
+      {% csrf_token %}
+
+      <!-- Section 1: General Information -->
+      <div class="form-section" data-section="1">
+        <div class="section-header">
+          <div class="section-icon-wrapper general">
+            <svg class="section-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="section-content">
+            <h3>Información General</h3>
+            <p class="section-description">Datos básicos del registro de campo</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="{{ form.plantacion.id_for_label }}" class="form-label required">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span>Plantación</span>
+            </label>
+            {{ form.plantacion }}
+            {% if form.plantacion.errors %}
+            <div class="field-error">{{ form.plantacion.errors|striptags }}</div>
+            {% endif %}
+            <div class="field-hint">
+              <span>Seleccione la plantación donde se realizó el registro</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.fecha_registro.id_for_label }}" class="form-label required">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Fecha de Registro</span>
+            </label>
+            {{ form.fecha_registro }}
+            {% if form.fecha_registro.errors %}
+            <div class="field-error">{{ form.fecha_registro.errors|striptags }}</div>
+            {% endif %}
+            <div class="field-hint">
+              <span>Fecha en la que se realizaron las observaciones</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Climate Data -->
+      <div class="form-section" data-section="2">
+        <div class="section-header">
+          <div class="section-icon-wrapper climate">
+            <svg class="section-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+            </svg>
+          </div>
+          <div class="section-content">
+            <h3>Condiciones Climáticas</h3>
+            <p class="section-description">Registro de temperatura, humedad y precipitación</p>
+          </div>
+        </div>
+
+        <div class="form-grid grid-3">
+          <div class="form-group">
+            <label for="{{ form.temperatura.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>Temperatura</span>
+            </label>
+            <div class="input-with-unit">
+              {{ form.temperatura }}
+              <span class="unit-badge">°C</span>
+            </div>
+            <div class="field-hint">
+              <span>Rango típico: 20-35°C</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.humedad.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+              <span>Humedad del Aire</span>
+            </label>
+            <div class="input-with-unit">
+              {{ form.humedad }}
+              <span class="unit-badge">%</span>
+            </div>
+            <div class="field-hint">
+              <span>Rango típico: 60-90%</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.precipitacion.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
+              <span>Precipitación</span>
+            </label>
+            <div class="input-with-unit">
+              {{ form.precipitacion }}
+              <span class="unit-badge">mm</span>
+            </div>
+            <div class="field-hint">
+              <span>Lluvia acumulada del día</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Soil Data -->
+      <div class="form-section" data-section="3">
+        <div class="section-header">
+          <div class="section-icon-wrapper soil">
+            <svg class="section-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+          <div class="section-content">
+            <h3>Análisis del Suelo</h3>
+            <p class="section-description">Parámetros químicos y físicos del suelo</p>
+          </div>
+        </div>
+
+        <div class="form-grid grid-3">
+          <div class="form-group">
+            <label for="{{ form.ph_suelo.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+              </svg>
+              <span>pH del Suelo</span>
+            </label>
+            {{ form.ph_suelo }}
+            <div class="ph-indicator">
+              <div class="ph-scale">
+                <span class="ph-label acidic">Ácido</span>
+                <span class="ph-label neutral">Neutral</span>
+                <span class="ph-label alkaline">Alcalino</span>
+              </div>
+            </div>
+            <div class="field-hint">
+              <span>Óptimo para banano: 5.5-7.0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.humedad_suelo.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+              <span>Humedad del Suelo</span>
+            </label>
+            <div class="input-with-unit">
+              {{ form.humedad_suelo }}
+              <span class="unit-badge">%</span>
+            </div>
+            <div class="field-hint">
+              <span>Capacidad de retención de agua</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.nitrogeno.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>Nitrógeno (N)</span>
+            </label>
+            <div class="input-with-unit">
+              {{ form.nitrogeno }}
+              <span class="unit-badge">ppm</span>
+            </div>
+            <div class="field-hint">
+              <span>Partes por millón en suelo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Agricultural Practices -->
+      <div class="form-section" data-section="4">
+        <div class="section-header">
+          <div class="section-icon-wrapper practices">
+            <svg class="section-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="section-content">
+            <h3>Prácticas Agrícolas</h3>
+            <p class="section-description">Actividades realizadas y observaciones del campo</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="{{ form.actividad_realizada.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              <span>Actividad Realizada</span>
+            </label>
+            {{ form.actividad_realizada }}
+            <div class="field-hint">
+              <span>Ejemplo: Fertilización, riego, poda, fumigación, cosecha</span>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span>Observaciones Adicionales</span>
+            </label>
+            {{ form.observaciones }}
+            <div class="character-count">
+              <span id="charCount">0</span> / 500 caracteres
+            </div>
+            <div class="field-hint">
+              <span>Incluya detalles sobre plagas, enfermedades o condiciones especiales observadas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <a href="{% url 'core:gestion_campo' %}" class="btn btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>Cancelar</span>
+        </a>
+        
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Guardar Registro</span>
+          <div class="btn-spinner" style="display: none;">
+            <svg class="spinner" viewBox="0 0 24 24">
+              <circle class="path" cx="12" cy="12" r="10" fill="none" stroke-width="3"></circle>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Help Panel -->
+  <div class="help-panel">
+    <div class="help-header">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3>Ayuda y Sugerencias</h3>
+    </div>
+    <div class="help-content">
+      <div class="help-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <strong>Campos requeridos:</strong>
+          <p>Los campos marcados con asterisco (*) son obligatorios</p>
+        </div>
+      </div>
+      <div class="help-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <strong>Momento óptimo:</strong>
+          <p>Registre las mediciones en la mañana para obtener datos más precisos</p>
+        </div>
+      </div>
+      <div class="help-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <div>
+          <strong>Precisión:</strong>
+          <p>Utilice instrumentos calibrados para mediciones más exactas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('fieldForm');
+  const progressFill = document.getElementById('progressFill');
+  const progressPercentage = document.getElementById('progressPercentage');
+  const submitBtn = document.getElementById('submitBtn');
+  const sections = document.querySelectorAll('.form-section');
+  const stepItems = document.querySelectorAll('.step-item');
+  
+  // Character counter
+  const observacionesField = document.querySelector('textarea[name="observaciones"]');
+  const charCount = document.getElementById('charCount');
+  
+  if (observacionesField && charCount) {
+    observacionesField.addEventListener('input', function() {
+      const count = this.value.length;
+      charCount.textContent = count;
+      if (count > 500) {
+        charCount.style.color = 'var(--danger)';
+      } else if (count > 450) {
+        charCount.style.color = 'var(--warning)';
+      } else {
+        charCount.style.color = 'var(--neutral-600)';
+      }
+    });
+  }
+  
+  // Progress tracking
+  function updateProgress() {
+    const inputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+    let filledInputs = 0;
+    
+    inputs.forEach(input => {
+      if (input.value && input.value.trim() !== '') {
+        filledInputs++;
+      }
+    });
+    
+    const progress = Math.round((filledInputs / inputs.length) * 100);
+    progressFill.style.width = progress + '%';
+    progressPercentage.textContent = progress;
+    
+    updateStepIndicators();
+  }
+  
+  // Update step indicators
+  function updateStepIndicators() {
+    sections.forEach((section, index) => {
+      const inputs = section.querySelectorAll('input:not([type="hidden"]), select, textarea');
+      let allFilled = true;
+      
+      inputs.forEach(input => {
+        if (input.hasAttribute('required') && (!input.value || input.value.trim() === '')) {
+          allFilled = false;
+        }
+      });
+      
+      const stepItem = stepItems[index];
+      if (stepItem) {
+        if (allFilled) {
+          stepItem.classList.add('completed');
+        } else {
+          stepItem.classList.remove('completed');
+        }
+      }
+    });
+  }
+  
+  // Field validation
+  function validateField(input) {
+    const formGroup = input.closest('.form-group');
+    if (!formGroup) return;
+    
+    formGroup.classList.remove('has-error', 'has-success');
+    
+    if (input.hasAttribute('required') && (!input.value || input.value.trim() === '')) {
+      if (input.classList.contains('touched')) {
+        formGroup.classList.add('has-error');
+      }
+    } else if (input.value && input.value.trim() !== '') {
+      formGroup.classList.add('has-success');
+    }
+  }
+  
+  // Event listeners
+  form.addEventListener('input', updateProgress);
+  form.addEventListener('change', updateProgress);
+  
+  const formInputs = form.querySelectorAll('input, select, textarea');
+  formInputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      this.classList.add('touched');
+      validateField(this);
+    });
+    
+    input.addEventListener('input', function() {
+      if (this.classList.contains('touched')) {
+        validateField(this);
+      }
+    });
+  });
+  
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    const btnText = submitBtn.querySelector('span');
+    const btnSpinner = submitBtn.querySelector('.btn-spinner');
+    
+    submitBtn.disabled = true;
+    btnText.style.opacity = '0.7';
+    btnSpinner.style.display = 'inline-block';
+    
+    setTimeout(() => {
+      submitBtn.disabled = false;
+      btnText.style.opacity = '1';
+      btnSpinner.style.display = 'none';
+    }, 3000);
+  });
+  
+  // Smooth scroll on focus
+  formInputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      setTimeout(() => {
+        this.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+      }, 100);
+    });
+  });
+  
+  // Initialize
+  updateProgress();
+  
+  // Section observer
+  const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '-100px'
+  };
+  
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionNumber = entry.target.dataset.section;
+        stepItems.forEach(item => {
+          if (item.dataset.step === sectionNumber) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+  
+  sections.forEach(section => {
+    sectionObserver.observe(section);
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,737 @@
+{% extends 'components/base_dashboard.html' %} 
+{% load static %} 
+{% block title %}Estadísticas de Análisis{% endblock %} 
+{% block breadcrumb %}Estadísticas{%endblock %} 
+{% block page_title %}Dashboard de Estadísticas{% endblock %} 
+{%block page_description %}Análisis detallado de enfermedades detectadas en las plantaciones{% endblock %} 
+{% block extra_css %}
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="{% static 'css/core/Dashboard/Modulo Estadisticas/estadistica.css' %}"
+/>
+{% endblock %} {% block content %}
+<div class="container-fluid dashboard-premium">
+  {% include 'includes/page_header.html' with title="Estadísticas" subtitle="Indicadores de tus plantaciones, análisis y condiciones climáticas" eyebrow="Panel de análisis" icon="pulse" %}
+
+  <!-- Tarjetas de estadísticas premium -->
+  <div class="stats-grid">
+    <div class="stat-card premium" data-aos="fade-up" data-aos-delay="0">
+      <div class="stat-card-header">
+        <div class="stat-icon-wrapper plantaciones">
+          <div class="stat-icon">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <div class="icon-glow"></div>
+        </div>
+        <div class="stat-menu">
+          <button class="menu-btn">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value-container">
+          <span
+            class="stat-number"
+            data-count="{{ total_plantaciones|default:0 }}"
+            >0</span
+          >
+        </div>
+        <div class="stat-label">Total Plantaciones</div>
+      </div>
+    </div>
+
+    <div class="stat-card premium" data-aos="fade-up" data-aos-delay="100">
+      <div class="stat-card-header">
+        <div class="stat-icon-wrapper analisis">
+          <div class="stat-icon">
+            <i class="fas fa-microscope"></i>
+          </div>
+          <div class="icon-glow"></div>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value-container">
+          <span class="stat-number" data-count="{{ total_analisis|default:0 }}"
+            >0</span
+          >
+        </div>
+        <div class="stat-label">Análisis Realizados</div>
+      </div>
+    </div>
+
+    <div class="stat-card premium" data-aos="fade-up" data-aos-delay="200">
+      <div class="stat-card-header">
+        <div class="stat-icon-wrapper registros">
+          <div class="stat-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value-container">
+          <span class="stat-number" data-count="{{ total_registros|default:0 }}"
+            >0</span
+          >
+        </div>
+        <div class="stat-label">Registros de Campo</div>
+      </div>
+    </div>
+
+    <div class="stat-card premium" data-aos="fade-up" data-aos-delay="300">
+      <div class="stat-card-header">
+        <div class="stat-icon-wrapper enfermedades">
+          <div class="stat-icon">
+            <i class="fas fa-bug"></i>
+          </div>
+        </div>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value-container">
+          <span
+            class="stat-number"
+            data-count="{{ enfermedades_unicas|default:0 }}"
+            >0</span
+          >
+        </div>
+        <div class="stat-label">Enfermedades Únicas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Condiciones Climáticas -->
+  {% if condiciones_climaticas %}
+  <div class="climate-section" data-aos="fade-up">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="title-icon">
+          <i class="fas fa-cloud-sun"></i>
+        </div>
+        <div>
+          <h3>Condiciones Climáticas</h3>
+          <p class="section-subtitle">Promedio de las últimas 24 horas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="climate-grid-premium">
+      <div class="climate-card">
+        <div class="climate-card-icon temp">
+          <i class="fas fa-temperature-high"></i>
+        </div>
+        <div class="climate-card-content">
+          <div class="climate-value">
+            {% if condiciones_climaticas.temp_promedio %} 
+            {{condiciones_climaticas.temp_promedio|floatformat:1 }}°C 
+            {% else %}
+            -- 
+            {% endif %}
+          </div>
+          <div class="climate-label">Temperatura</div>
+          <div class="climate-status optimal">Óptimo</div>
+        </div>
+      </div>
+
+      <div class="climate-card">
+        <div class="climate-card-icon humidity">
+          <i class="fas fa-tint"></i>
+        </div>
+        <div class="climate-card-content">
+          <div class="climate-value">
+            {% if condiciones_climaticas.humedad_promedio %} 
+            {{condiciones_climaticas.humedad_promedio|floatformat:1 }}
+            % 
+            {% else %}
+            -- 
+            {% endif %}
+          </div>
+          <div class="climate-label">Humedad</div>
+          <div class="climate-status warning">Moderado</div>
+        </div>
+      </div>
+
+      <div class="climate-card">
+        <div class="climate-card-icon ph">
+          <i class="fas fa-flask"></i>
+        </div>
+        <div class="climate-card-content">
+          <div class="climate-value">
+            {% if condiciones_climaticas.ph_promedio %} 
+            {{ condiciones_climaticas.ph_promedio|floatformat:1 }} 
+            {% else %} -- 
+            {% endif %}
+          </div>
+          <div class="climate-label">pH del Suelo</div>
+          <div class="climate-status optimal">Óptimo</div>
+        </div>
+      </div>
+
+      <div class="climate-card">
+        <div class="climate-card-icon rain">
+          <i class="fas fa-cloud-rain"></i>
+        </div>
+        <div class="climate-card-content">
+          <div class="climate-value">
+            {% if condiciones_climaticas.precipitacion_total %} 
+            {{condiciones_climaticas.precipitacion_total|floatformat:0 }}
+            mm 
+            {% else %} -- {% endif %}
+          </div>
+          <div class="climate-label">Precipitación</div>
+          <div class="climate-status good">Bueno</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Gráfico de Tendencia Principal -->
+  <div class="charts-section" data-aos="fade-up">
+    <div
+      class="chart-card-premium main-chart"
+      data-aos="fade-up"
+      data-aos-delay="0"
+    >
+      <div class="chart-card-header">
+        <div class="chart-header-left">
+          <div class="chart-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div>
+            <h3 class="chart-title">Tendencia de Análisis</h3>
+            <p class="chart-subtitle">Últimos 12 meses</p>
+          </div>
+        </div>
+        <div class="chart-controls">
+          <div class="chart-tabs">
+            <button class="chart-tab active">Mensual</button>
+            <button class="chart-tab">Semanal</button>
+            <button class="chart-tab">Diario</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-container-premium">
+        <canvas id="tendenciaChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid de gráficos secundarios -->
+  <div class="charts-grid-secondary">
+    <div class="chart-card-premium" data-aos="fade-up" data-aos-delay="0">
+      <div class="chart-card-header">
+        <div class="chart-header-left">
+          <div class="chart-icon diseases">
+            <i class="fas fa-chart-pie"></i>
+          </div>
+          <div>
+            <h3 class="chart-title">Distribución de Enfermedades</h3>
+            <p class="chart-subtitle">Total detectadas</p>
+          </div>
+        </div>
+      </div>
+      <div class="chart-container-premium">
+        <canvas id="enfermedadesChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card-premium" data-aos="fade-up" data-aos-delay="100">
+      <div class="chart-card-header">
+        <div class="chart-header-left">
+          <div class="chart-icon plantations">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div>
+            <h3 class="chart-title">Análisis por Plantación</h3>
+            <p class="chart-subtitle">Comparativa</p>
+          </div>
+        </div>
+      </div>
+      <div class="chart-container-premium">
+        <canvas id="plantacionesChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card-premium" data-aos="fade-up" data-aos-delay="200">
+      <div class="chart-card-header">
+        <div class="chart-header-left">
+          <div class="chart-icon extension">
+            <i class="fas fa-map-marked-alt"></i>
+          </div>
+          <div>
+            <h3 class="chart-title">Extensión de Cultivos</h3>
+            <p class="chart-subtitle">Hectáreas por zona</p>
+          </div>
+        </div>
+      </div>
+      <div class="chart-container-premium">
+        <canvas id="extensionChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Plantaciones -->
+  <div class="table-section-premium" data-aos="fade-up">
+    <div class="table-section-header">
+      <div class="section-title">
+        <div class="title-icon">
+          <i class="fas fa-table"></i>
+        </div>
+        <div>
+          <h3>Detalle por Plantación</h3>
+          <p class="section-subtitle">
+            {{ stats_plantaciones|length }} plantaciones registradas
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container-premium">
+      <table class="table-premium">
+        <thead>
+          <tr>
+            <th>Plantación</th>
+            <th>Ubicación</th>
+            <th>Extensión (Ha)</th>
+            <th>Análisis</th>
+            <th>Registros</th>
+            <th>Última Enfermedad</th>
+            <th>Probabilidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for plantacion in stats_plantaciones %}
+          <tr class="table-row-hover">
+            <td>
+              <div class="table-cell-with-avatar">
+                <div class="cell-avatar plantacion">
+                  <i class="fas fa-leaf"></i>
+                </div>
+                <div class="cell-content">
+                  <strong class="cell-title">{{ plantacion.nombre }}</strong>
+                  <span class="cell-subtitle">ID: #{{ forloop.counter }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="location-cell">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ plantacion.ubicacion|default:"N/A" }}
+              </div>
+            </td>
+            <td>
+              <span class="data-badge"
+                >{{ plantacion.hectareas|floatformat:1 }} Ha</span
+              >
+            </td>
+            <td>
+              <div class="progress-cell">
+                <span class="progress-value"
+                  >{{ plantacion.analisis_realizados }}</span
+                >
+              </div>
+            </td>
+            <td>
+              <span class="count-badge">{{ plantacion.registros_campo }}</span>
+            </td>
+            <td>
+              <div class="disease-cell">
+                <i class="fas fa-bug"></i>
+                {{ plantacion.ultima_enfermedad }}
+              </div>
+            </td>
+            <td>
+              <span
+                class="probability-badge-premium {% if plantacion.probabilidad_ultima >= 80 %}danger{% elif plantacion.probabilidad_ultima >= 50 %}warning{% else %}success{% endif %}"
+              >
+                <span class="badge-dot"></span>
+                {{ plantacion.probabilidad_ultima|floatformat:1 }}%
+              </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="empty-state-premium">
+              <div class="empty-state-content">
+                <div class="empty-state-icon">
+                  <i class="fas fa-inbox"></i>
+                </div>
+                <h4>No hay datos disponibles</h4>
+                <p>Aún no se han registrado plantaciones</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Alert Premium -->
+  <div class="alert-premium" data-aos="fade-up">
+    <div class="alert-icon-container">
+      <div class="alert-icon pulse">
+        <i class="fas fa-broadcast-tower"></i>
+      </div>
+    </div>
+    <div class="alert-content-premium">
+      <div class="alert-title">Sistema Activo</div>
+      <div class="alert-text">
+        Análisis recientes (últimos 30 días):
+        <strong class="highlight">{{ analisis_recientes|default:0 }}</strong> •
+        Última actualización:
+        <strong class="highlight"
+          ><span id="ultimaActualizacion">{% now "H:i" %}</span></strong
+        >
+      </div>
+    </div>
+    <div class="alert-stats">
+      <div class="alert-stat-item">
+        <span class="stat-dot active"></span>
+        <span>Sistema Online</span>
+      </div>
+      <div class="alert-stat-item">
+        <span class="stat-dot"></span>
+        <span>{{ stats_plantaciones|length }} Plantaciones</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<!-- SCRIPTS CORRECTAMENTE ESTRUCTURADOS -->
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+  try {
+      console.log('🚀 Iniciando script de estadísticas...');
+      console.log('¿Chart.js cargado?', typeof Chart !== 'undefined' ? '✅ Sí' : '❌ No');
+      console.log('¿AOS cargado?', typeof AOS !== 'undefined' ? '✅ Sí' : '❌ No');
+
+      // Inicializar AOS
+      if (typeof AOS !== 'undefined') {
+          AOS.init({
+              duration: 800,
+              easing: 'ease-out-cubic',
+              once: true,
+              offset: 50
+          });
+      }
+
+      // DATOS DESDE DJANGO - SINTAXIS CORRECTA
+      const estadisticasEnfermedades = {{ estadisticas|safe|default:'[]' }};
+      const tendenciasMensuales = {{ tendencias_mensuales|safe|default:'[]' }};
+      const statsPlantaciones = [
+          {% for plantacion in stats_plantaciones %}
+          {
+              nombre: "{{ plantacion.nombre|escapejs|default:'Sin nombre' }}",
+              ubicacion: "{{ plantacion.ubicacion|default:'N/A'|escapejs }}",
+              hectareas: parseFloat("{{ plantacion.hectareas|default:'0' }}") || 0,
+              analisis_realizados: parseInt("{{ plantacion.analisis_realizados|default:'0' }}") || 0,
+              registros_campo: parseInt("{{ plantacion.registros_campo|default:'0' }}") || 0,
+              ultima_enfermedad: "{{ plantacion.ultima_enfermedad|escapejs|default:'N/A' }}",
+              probabilidad_ultima: parseFloat("{{ plantacion.probabilidad_ultima|default:'0' }}") || 0
+          }{% if not forloop.last %},{% endif %}
+          {% endfor %}
+      ];
+
+      console.log('✅ Datos cargados correctamente');
+
+      // PALETA DE COLORES
+      // Verde de marca para gráficos de una sola serie
+      const coloresPremium = {
+          primary: '#2f6b3a',
+          primarySoft: 'rgba(47, 107, 58, 0.12)',
+          grid: '#e6e8e1'
+      };
+
+      // Paleta categórica validada (daltonismo y contraste), en orden fijo
+      const paletaCategorica = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948'];
+
+      const nombresEnfermedades = {
+          'banana black sigatoka disease': 'Sigatoka negra',
+          'banana yellow sigatoka disease': 'Sigatoka amarilla',
+          'banana moko disease': 'Moko',
+          'banana panama disease': 'Mal de Panamá',
+          'banana insect pest disease': 'Daño por plagas',
+          'banana healthy leaf': 'Hoja sana'
+      };
+      const nombreEs = (n) => nombresEnfermedades[(n || '').toLowerCase()] || n;
+
+      const mesesEs = {January:'Ene', February:'Feb', March:'Mar', April:'Abr', May:'May', June:'Jun', July:'Jul', August:'Ago', September:'Sep', October:'Oct', November:'Nov', December:'Dic'};
+      const mesEs = (m) => mesesEs[m] || m;
+
+      // FUNCIONES AUXILIARES
+      function createGradient(ctx, chartArea, colorStart, colorEnd, horizontal = false) {
+          if (!chartArea) return colorStart;
+          const gradient = horizontal
+              ? ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0)
+              : ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+          gradient.addColorStop(0, colorStart);
+          gradient.addColorStop(1, colorEnd);
+          return gradient;
+      }
+
+      function generateMiniChartData(points = 7) {
+          return Array.from({length: points}, () => Math.floor(Math.random() * 100));
+      }
+
+      function animateCounter(element) {
+          const target = parseInt(element.getAttribute('data-count')) || 0;
+          const duration = 2000;
+          const step = target / (duration / 16);
+          let current = 0;
+          const timer = setInterval(() => {
+              current += step;
+              if (current >= target) {
+                  element.textContent = target;
+                  clearInterval(timer);
+              } else {
+                  element.textContent = Math.floor(current);
+              }
+          }, 16);
+      }
+
+      function actualizarHora() {
+          const now = new Date();
+          const horaElement = document.getElementById('ultimaActualizacion');
+          if (horaElement) {
+              horaElement.textContent = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+          }
+      }
+
+      // CONFIGURAR CHART.JS
+      function configurarChartDefaults() {
+          Chart.defaults.font.family = "'Manrope', 'Inter', -apple-system, 'Segoe UI', sans-serif";
+          Chart.defaults.color = '#718096';
+          Chart.defaults.borderColor = coloresPremium.grid;
+          Chart.defaults.plugins.legend.labels.usePointStyle = true;
+          Chart.defaults.plugins.legend.labels.padding = 15;
+          Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+          Chart.defaults.plugins.tooltip.padding = 12;
+          Chart.defaults.plugins.tooltip.borderRadius = 8;
+      }
+
+      // CREAR MINI CHARTS
+      function crearMiniChart(canvasId, color1, color2) {
+          const canvas = document.getElementById(canvasId);
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          const data = generateMiniChartData(7);
+          new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: ['', '', '', '', '', '', ''],
+                  datasets: [{
+                      data: data,
+                      borderColor: color1,
+                      backgroundColor: (context) => {
+                          const chart = context.chart;
+                          const {ctx, chartArea} = chart;
+                          if (!chartArea) return;
+                          return createGradient(ctx, chartArea, color1 + '20', color2 + '05');
+                      },
+                      fill: true,
+                      tension: 0.4,
+                      borderWidth: 2,
+                      pointRadius: 0
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  events: [],
+                  plugins: {
+                      legend: { display: false },
+                      tooltip: { enabled: false }
+                  },
+                  scales: {
+                      x: { display: false },
+                      y: { display: false }
+                  }
+              }
+          });
+      }
+
+      function crearClimateMiniChart(canvasId, color) {
+          const canvas = document.getElementById(canvasId);
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          const data = generateMiniChartData(10);
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: Array(10).fill(''),
+                  datasets: [{
+                      data: data,
+                      backgroundColor: color + '40',
+                      borderColor: color,
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  events: [],
+                  plugins: {
+                      legend: { display: false },
+                      tooltip: { enabled: false }
+                  },
+                  scales: {
+                      x: { display: false },
+                      y: { display: false }
+                  }
+              }
+          });
+      }
+
+      // GRÁFICO TENDENCIA
+      function crearGraficoTendencia() {
+          if (!tendenciasMensuales || tendenciasMensuales.length === 0) return;
+          const ctx = document.getElementById('tendenciaChart');
+          if (!ctx) return;
+          new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: tendenciasMensuales.map(t => mesEs(t.mes.split(' ')[0])),
+                  datasets: [{
+                      label: 'Análisis',
+                      data: tendenciasMensuales.map(t => t.analisis),
+                      borderColor: coloresPremium.primary,
+                      backgroundColor: coloresPremium.primarySoft,
+                      borderWidth: 2,
+                      fill: true,
+                      tension: 0.4,
+                      pointRadius: 6,
+                      pointBackgroundColor: coloresPremium.primary
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                      legend: { display: false }
+                  },
+                  scales: {
+                      y: { beginAtZero: true },
+                      x: { grid: { display: false } }
+                  }
+              }
+          });
+      }
+
+      // GRÁFICO ENFERMEDADES
+      function crearGraficoEnfermedades() {
+          if (!estadisticasEnfermedades || estadisticasEnfermedades.length === 0) return;
+          const ctx = document.getElementById('enfermedadesChart');
+          if (!ctx) return;
+          new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                  labels: estadisticasEnfermedades.map(e => `${nombreEs(e.enfermedad)} (${e.count})`),
+                  datasets: [{
+                      data: estadisticasEnfermedades.map(e => e.count),
+                      backgroundColor: estadisticasEnfermedades.map((_, i) => paletaCategorica[i % paletaCategorica.length]),
+                      borderWidth: 2,
+                      borderColor: '#fff'
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  cutout: '70%',
+                  plugins: {
+                      legend: { position: 'bottom' }
+                  }
+              }
+          });
+      }
+
+      // GRÁFICO PLANTACIONES
+      function crearGraficoPlantaciones() {
+          if (!statsPlantaciones || statsPlantaciones.length === 0) return;
+          const ctx = document.getElementById('plantacionesChart');
+          if (!ctx) return;
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: statsPlantaciones.map(p => p.nombre.substring(0, 15)),
+                  datasets: [{
+                      label: 'Análisis',
+                      data: statsPlantaciones.map(p => p.analisis_realizados),
+                      backgroundColor: coloresPremium.primary
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: {
+                      y: { beginAtZero: true }
+                  }
+              }
+          });
+      }
+
+      // GRÁFICO EXTENSIÓN
+      function crearGraficoExtension() {
+          if (!statsPlantaciones || statsPlantaciones.length === 0) return;
+          const ctx = document.getElementById('extensionChart');
+          if (!ctx) return;
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: statsPlantaciones.map(p => p.nombre.substring(0, 15)),
+                  datasets: [{
+                      label: 'Hectáreas',
+                      data: statsPlantaciones.map(p => p.hectareas),
+                      backgroundColor: coloresPremium.primary
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  indexAxis: 'y',
+                  plugins: { legend: { display: false } }
+              }
+          });
+      }
+
+      // INICIALIZAR DASHBOARD
+      function inicializarDashboard() {
+          if (typeof Chart === 'undefined') {
+              console.error('❌ Chart.js no cargado');
+              return;
+          }
+
+          configurarChartDefaults();
+          crearGraficoTendencia();
+          crearGraficoEnfermedades();
+          crearGraficoPlantaciones();
+          crearGraficoExtension();
+
+          document.querySelectorAll('[data-count]').forEach(el => animateCounter(el));
+          actualizarHora();
+          setInterval(actualizarHora, 60000);
+
+          console.log('✨ Dashboard iniciado correctamente');
+      }
+
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', inicializarDashboard);
+      } else {
+          inicializarDashboard();
+      }
+
+  } catch (error) {
+      console.error('💥 Error:', error.message);
+      console.error('En línea:', error.lineNumber);
+  }
+</script>
+{% endblock %}

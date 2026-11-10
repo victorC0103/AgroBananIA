@@ -1,0 +1,469 @@
+/* ============================================
+   THEME.CSS - Capa visual común del dashboard
+   Se carga DESPUÉS del CSS de cada módulo para
+   unificar tipografía, colores, encabezados,
+   tarjetas y botones en todo el sistema.
+   ============================================ */
+
+:root {
+  /* Marca (misma paleta que la web pública) */
+  --brand-900: #0f2a17;
+  --brand-800: #163a20;
+  --brand-700: #23502d;
+  --brand-600: #2f6b3a;
+  --brand-500: #3f8a4b;
+  --brand-100: #e6f0e1;
+  --brand-50: #f1f6ee;
+  --banana: #f5c400;
+  --banana-soft: #fff4c2;
+
+  --surface: #ffffff;
+  --canvas: #f5f6f1;
+  --line: #e6e8e1;
+  --ink: #18221b;
+  --ink-2: #4b5650;
+  --ink-3: #87918a;
+
+  --font: 'Manrope', 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --radius-card: 16px;
+  --shadow-card: 0 1px 2px rgba(16, 24, 18, 0.04), 0 8px 24px -16px rgba(16, 24, 18, 0.18);
+
+  /* Variables que ya usan los módulos: se alinean con la marca */
+  --primary-green: var(--brand-600);
+  --primary-dark: var(--brand-800);
+  --primary-light: #6fb33f;
+  --accent-yellow: var(--banana);
+  --bg-main: var(--canvas);
+  --bg-card: var(--surface);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --text-muted: var(--ink-3);
+  --sidebar-hover: var(--brand-50);
+  --sidebar-active: var(--brand-100);
+  --sidebar-active-border: var(--brand-600);
+}
+
+/* ---------- Base ---------- */
+body {
+  font-family: var(--font);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea,
+h1, h2, h3, h4, h5, h6,
+.logo-text,
+.logo-icon,
+.nav-title,
+[class*="title"]:not(i),
+[class*="value"]:not(i):not(input) {
+  font-family: var(--font);
+}
+
+:focus-visible {
+  outline: 3px solid var(--banana);
+  outline-offset: 2px;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  border-right: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.logo {
+  background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-900) 100%);
+  border-bottom: 0;
+}
+
+.logo-icon {
+  background: var(--banana);
+  color: var(--brand-900);
+  box-shadow: none;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-toggle {
+  background: var(--brand-600);
+}
+
+.nav-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.nav-item {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  margin: 0.15rem 0.85rem;
+}
+
+.nav-item:hover {
+  transform: none;
+  background: var(--brand-50);
+  color: var(--brand-700);
+}
+
+.nav-item.active {
+  background: var(--brand-100);
+  color: var(--brand-800);
+  box-shadow: inset 3px 0 0 var(--brand-600);
+}
+
+.nav-item.active .nav-icon {
+  color: var(--brand-600);
+}
+
+.mobile-menu-btn {
+  background: var(--brand-700);
+}
+
+/* ---------- Contenido ---------- */
+.main-content {
+  padding: 2rem 2.25rem 3rem;
+  max-width: 1320px;
+}
+
+/* ---------- Encabezado común (includes/page_header.html) ---------- */
+.ph {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.9rem 2rem;
+  margin-bottom: 1.75rem;
+  border-radius: 20px;
+  color: #fff;
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgba(111, 179, 63, 0.35), transparent 60%),
+    linear-gradient(135deg, var(--brand-700) 0%, var(--brand-900) 100%);
+}
+
+.ph::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 40px);
+  pointer-events: none;
+}
+
+.ph > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ph-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 0.9rem;
+}
+
+.ph-back:hover {
+  color: #fff;
+}
+
+.ph-row {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.ph-icon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--banana);
+  color: var(--brand-900);
+}
+
+.ph-eyebrow {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--banana);
+  margin-bottom: 0.3rem;
+}
+
+.ph-title {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0;
+}
+
+.ph-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.98rem;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 60ch;
+}
+
+.ph-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.3rem;
+  border-radius: 12px;
+  background: var(--banana);
+  color: var(--brand-900);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.ph-action:hover {
+  background: #ffd21f;
+  transform: translateY(-1px);
+}
+
+/* ---------- Tarjetas: misma superficie en todos los módulos ---------- */
+.stat-card,
+.kpi-card:not(.featured),
+.weather-card,
+.analysis-card-modern,
+.summary-card,
+.result-card,
+.modern-card,
+.disease-card,
+.form-card,
+.diagnosis-card-detail,
+.gallery-card-detail,
+.recommendations-card-detail,
+.table-section-premium,
+.filters-bar,
+.controls-bar,
+.progress-tracker,
+.content-wrapper .card,
+.map-container-modern,
+.info-section-modern,
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card:hover,
+.analysis-card-modern:hover,
+.weather-card:hover,
+.disease-card:hover {
+  box-shadow: 0 1px 2px rgba(16, 24, 18, 0.04), 0 16px 32px -18px rgba(16, 24, 18, 0.28);
+}
+
+/* Tarjeta destacada del inicio con el color de marca */
+.kpi-card.featured {
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-800) 100%);
+  border: 0;
+  border-radius: var(--radius-card);
+}
+
+/* ---------- Botones ---------- */
+.btn-primary,
+.btn-new,
+.btn-view-details,
+.btn-confirm,
+.btn-action.primary,
+.btn-recommendation {
+  background: var(--brand-600);
+  border-color: var(--brand-600);
+  color: #fff;
+  box-shadow: none;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.btn-primary:hover,
+.btn-new:hover,
+.btn-view-details:hover,
+.btn-confirm:hover,
+.btn-action.primary:hover,
+.btn-recommendation:hover {
+  background: var(--brand-700);
+  border-color: var(--brand-700);
+  box-shadow: none;
+}
+
+.btn-secondary,
+.btn-cancel,
+.btn-back {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ---------- Tablas ---------- */
+table th {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 5rem 1rem 2rem;
+  }
+  .ph {
+    padding: 1.4rem 1.25rem;
+    border-radius: 16px;
+  }
+  .ph-icon {
+    width: 46px;
+    height: 46px;
+  }
+  .ph-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Alertas: el anillo muestra el nivel (Alta/Media/Baja) en lugar de un % ficticio */
+.value-number.value-text {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.kpi-link {
+  color: var(--brand-600);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.kpi-link:hover {
+  text-decoration: underline;
+}
+
+.kpi-card.featured .kpi-icon {
+  background: var(--banana);
+  color: var(--brand-900);
+}
+
+/* Lista de detección: el anillo mide la confianza del modelo,
+   no la gravedad; alta confianza = verde de marca */
+.probability-badge.high circle:last-child { stroke: var(--brand-500); }
+.probability-badge.medium circle:last-child { stroke: #d99a00; }
+.probability-badge.low circle:last-child { stroke: #c2410c; }
+
+.stat-value.stat-value-sm {
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+/* ---------- Estadísticas: tarjetas compactas e iconos sobrios ---------- */
+.dashboard-premium.container-fluid {
+  padding: 0;
+}
+
+.dashboard-premium .stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-premium .stat-card.premium {
+  padding: 1.25rem;
+}
+
+.dashboard-premium .stat-card-header {
+  margin-bottom: 0.9rem;
+}
+
+.dashboard-premium .stat-menu,
+.dashboard-premium .icon-glow {
+  display: none;
+}
+
+.dashboard-premium .stat-icon-wrapper {
+  width: 44px;
+  height: 44px;
+}
+
+.dashboard-premium .stat-icon,
+.dashboard-premium .climate-card-icon,
+.dashboard-premium .chart-icon,
+.dashboard-premium .title-icon {
+  background: var(--brand-100) !important;
+  color: var(--brand-700) !important;
+  box-shadow: none !important;
+  border-radius: 12px;
+}
+
+.dashboard-premium .stat-icon {
+  width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+}
+
+.dashboard-premium .stat-icon-wrapper.analisis .stat-icon,
+.dashboard-premium .climate-card-icon.temp {
+  background: #fdecea !important;
+  color: #b4231a !important;
+}
+
+.dashboard-premium .stat-icon-wrapper.registros .stat-icon,
+.dashboard-premium .climate-card-icon.humidity,
+.dashboard-premium .climate-card-icon.rain {
+  background: #e7f0fb !important;
+  color: #1f5fa8 !important;
+}
+
+.dashboard-premium .stat-icon-wrapper.enfermedades .stat-icon {
+  background: var(--banana-soft) !important;
+  color: #7a5b00 !important;
+}
+
+.dashboard-premium .stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-premium .climate-card {
+  background: var(--surface);
+}
+
+@media (max-width: 1100px) {
+  .dashboard-premium .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

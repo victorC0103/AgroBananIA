@@ -1,0 +1,461 @@
+{% extends 'components/base_dashboard.html' %}
+{% load static %}
+{% block title %}Gestión de Campo{% endblock %}
+{% block breadcrumb %}Gestión de Campo{% endblock %}
+{% block page_title %}Registros de Campo{% endblock %}
+{% block page_description %}Monitoreo inteligente de condiciones ambientales{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core/dashboard/Modulo_Gestion_Campo/gestion_campo.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+{% url 'core:registrocampo_create' as nuevo_url %}
+{% include 'includes/page_header.html' with title="Gestión de campo" subtitle="Clima actual, condiciones del suelo y labores de tu plantación" eyebrow="Monitoreo" icon="chart" action_url=nuevo_url action_label="Nuevo registro" %}
+
+<!-- Weather Cards Grid -->
+<div class="weather-grid">
+  <!-- Temperature Card -->
+  <div class="weather-card fade-in">
+    <div class="weather-card-header">
+      <div class="weather-icon icon-temperature">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="weather-label">Temperatura Actual</div>
+    <div class="weather-value">
+      {{ clima.temperatura_c }}<span class="weather-unit">°C</span>
+    </div>
+    <div class="weather-range">Rango óptimo: 20-30°C</div>
+    <div class="weather-footer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+      </svg>
+      {{ clima.condicion }}
+    </div>
+  </div>
+
+  <!-- Humidity Card -->
+  <div class="weather-card fade-in" style="animation-delay: 0.1s">
+    <div class="weather-card-header">
+      <div class="weather-icon icon-humidity">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="weather-label">Humedad Relativa</div>
+    <div class="weather-value">
+      {{ clima.humedad }}<span class="weather-unit">%</span>
+    </div>
+    <div class="weather-range">Óptimo: 60-80%</div>
+    <div class="weather-footer">
+      <div class="status-indicator status-success">
+        <div class="status-dot"></div>
+        Nivel Óptimo
+      </div>
+    </div>
+  </div>
+
+  <!-- Wind Card -->
+  <div class="weather-card fade-in" style="animation-delay: 0.2s">
+    <div class="weather-card-header">
+      <div class="weather-icon icon-wind">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/>
+        </svg>
+      </div>
+    </div>
+    <div class="weather-label">Velocidad del Viento</div>
+    <div class="weather-value">
+      {{ clima.viento_kph }}<span class="weather-unit">km/h</span>
+    </div>
+    <div class="weather-range">Condiciones favorables</div>
+    <div class="weather-footer">
+      <div class="status-indicator status-success">
+        <div class="status-dot"></div>
+        Estable
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Card -->
+  <div class="weather-card fade-in" style="animation-delay: 0.3s">
+    <div class="weather-card-header">
+      <div class="weather-icon icon-location">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+    </div>
+    <div class="weather-label">Ubicación Actual</div>
+    <div class="weather-value" style="font-size: 1.5rem;">{{ clima.ciudad }}</div>
+    <div class="weather-range">{{ clima.region }}, {{ clima.pais }}</div>
+    <div class="weather-footer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Actualizado hoy
+    </div>
+  </div>
+</div>
+
+<!-- Controls Bar -->
+<div class="controls-bar">
+  <div class="search-wrapper">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/>
+      <path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input 
+      type="text" 
+      class="search-input" 
+      id="searchInput"
+      placeholder="Buscar por plantación, fecha o parámetros..."
+      autocomplete="off"
+    />
+    <button class="search-clear" id="searchClear">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Data Table -->
+<div class="table-container">
+  <div class="table-header">
+    <div class="table-title-wrapper">
+      <div class="table-icon-wrapper">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="table-title">Historial de Registros</h2>
+        <p class="table-subtitle">Registros de monitoreo de campo</p>
+      </div>
+    </div>
+    <div class="table-badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <strong id="tableCount">{{ paginator.count }}</strong> Registros
+    </div>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th class="sortable">Fecha</th>
+        <th class="sortable">Plantación</th>
+        <th class="text-center sortable">Temperatura</th>
+        <th class="text-center sortable">Humedad</th>
+        <th class="text-center sortable">pH Suelo</th>
+        <th class="text-center sortable">Precipitación</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      {% for registro in registros_campo %}
+      <tr class="fade-in" style="animation-delay: {{ forloop.counter0|add:'0' }}00ms">
+        <td>
+          <div class="cell-date">
+            <span class="date-primary">{{ registro.fecha_registro|date:"d/m/Y" }}</span>
+            <span class="date-secondary">{{ registro.fecha_registro|timesince }} atrás</span>
+          </div>
+        </td>
+        <td>
+          <div class="cell-plantation">
+            <div class="plantation-avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+            </div>
+            <div>
+              <span class="plantation-name">{{ registro.plantacion.nombre_finca }}</span>
+              <span class="plantation-location">Sector {{ forloop.counter }}</span>
+            </div>
+          </div>
+        </td>
+        <td class="text-center">
+          <span class="metric-badge badge-temperature">
+            {{ registro.temperatura }}°C
+          </span>
+        </td>
+        <td class="text-center">
+          <span class="metric-badge badge-humidity">
+            {{ registro.humedad }}%
+          </span>
+        </td>
+        <td class="text-center">
+          <span class="metric-badge badge-ph">
+            pH {{ registro.ph_suelo }}
+          </span>
+        </td>
+        <td class="text-center">
+          <span class="metric-badge badge-precipitation">
+            {{ registro.precipitacion }}mm
+          </span>
+        </td>
+        <td class="text-center">
+          <div class="action-group">
+            <a href="{% url 'core:registrocampo_edit' registro.id %}" 
+               class="action-btn action-btn-edit" 
+               title="Editar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+            </a>
+            <button class="action-btn action-btn-delete"
+                    title="Eliminar"
+                    data-id="{{ registro.id }}"
+                    data-fecha="{{ registro.fecha_registro|date:'d/m/Y' }}"
+                    data-plantacion="{{ registro.plantacion.nombre_finca }}"
+                    onclick="showDeleteModal(this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">
+          <div class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <h3 class="empty-title">No hay registros disponibles</h3>
+            <p class="empty-description">
+              Comienza a monitorear las condiciones de tus plantaciones creando tu primer registro
+            </p>
+            <a href="{% url 'core:registrocampo_create' %}" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14m7-7H5"/>
+              </svg>
+              Crear Primer Registro
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  {% if is_paginated %}
+  <div class="pagination-wrapper">
+    <div class="pagination-info">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 16v-4m0-4h.01"/>
+      </svg>
+      <span>
+        Mostrando <strong>{{ page_obj.start_index }}</strong> - <strong>{{ page_obj.end_index }}</strong> 
+        de <strong>{{ paginator.count }}</strong>
+      </span>
+    </div>
+
+    <nav>
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a href="?page=1" class="page-link" title="Primera">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+              </svg>
+            </a>
+          </li>
+          <li class="page-item">
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-link" title="Anterior">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 19l-7-7 7-7"/>
+              </svg>
+            </a>
+          </li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+              <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a href="?page={{ page_obj.next_page_number }}" class="page-link" title="Siguiente">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </li>
+          <li class="page-item">
+            <a href="?page={{ paginator.num_pages }}" class="page-link" title="Última">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="modal-title">Confirmar Eliminación</h3>
+      <p class="modal-description">Esta acción no se puede deshacer</p>
+    </div>
+
+    <div class="modal-body">
+      <p id="deleteMessage" class="modal-message"></p>
+      <div class="modal-warning">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4m0-4h.01"/>
+        </svg>
+        <span>Los datos eliminados no podrán ser recuperados</span>
+      </div>
+    </div>
+
+    <form id="deleteForm" method="POST">
+      {% csrf_token %}
+      <div class="modal-footer">
+        <button type="button" class="btn btn-cancel" onclick="closeDeleteModal()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-delete">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          Sí, Eliminar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Search functionality
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const tableBody = document.getElementById('tableBody');
+let searchTimeout;
+
+searchInput.addEventListener('input', function(e) {
+  clearTimeout(searchTimeout);
+  const value = e.target.value.toLowerCase();
+  
+  searchClear.style.display = value ? 'flex' : 'none';
+  
+  searchTimeout = setTimeout(() => {
+    const rows = tableBody.querySelectorAll('tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+      if (row.querySelector('.empty-state')) return;
+      
+      const text = row.textContent.toLowerCase();
+      const matches = text.includes(value);
+      
+      row.style.display = matches ? '' : 'none';
+      if (matches) visibleCount++;
+    });
+    
+    document.getElementById('tableCount').textContent = visibleCount;
+  }, 300);
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input'));
+  searchInput.focus();
+});
+
+// Modal functions
+function showDeleteModal(btn) {
+  const id = btn.dataset.id;
+  const fecha = btn.dataset.fecha;
+  const plantacion = btn.dataset.plantacion;
+  
+  document.getElementById('deleteMessage').innerHTML = 
+    `¿Estás seguro que deseas eliminar el registro de <strong>${plantacion}</strong> con fecha <strong>${fecha}</strong>?`;
+  
+  document.getElementById('deleteForm').action = `/campo/${id}/eliminar/`;
+  
+  const modal = document.getElementById('deleteModal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close modal on backdrop click
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDeleteModal();
+});
+
+// Export function
+function exportData() {
+  alert('Función de exportación en desarrollo');
+  // Implement your export logic here
+}
+
+// Table sorting
+document.querySelectorAll('.sortable').forEach(th => {
+  th.addEventListener('click', function() {
+    const table = this.closest('table');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => 
+      !row.querySelector('.empty-state')
+    );
+    const index = Array.from(this.parentElement.children).indexOf(this);
+    const isAsc = this.dataset.order === 'asc';
+    
+    rows.sort((a, b) => {
+      const aText = a.children[index].textContent.trim();
+      const bText = b.children[index].textContent.trim();
+      
+      return isAsc 
+        ? bText.localeCompare(aText, undefined, {numeric: true})
+        : aText.localeCompare(bText, undefined, {numeric: true});
+    });
+    
+    this.dataset.order = isAsc ? 'desc' : 'asc';
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
+
+{% endblock %}

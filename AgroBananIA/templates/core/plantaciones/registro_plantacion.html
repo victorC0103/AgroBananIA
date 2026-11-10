@@ -1,0 +1,308 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Registrar Plantación | AgroBananIA{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap"
+/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
+<link rel="stylesheet" href="{% static 'css/core/Registro_plantaciones/plantaciones.css' %}?v=2" />
+{% endblock %}
+
+{% block content %}
+<div class="reg">
+  <div class="reg-layout">
+    <!-- Panel del formulario -->
+    <section class="reg-panel">
+      <nav class="reg-crumb" aria-label="Ruta">
+        <a href="{% url 'core:home' %}"><i class="fas fa-home"></i> Inicio</a>
+        <span>/</span>
+        <span aria-current="page">Registrar plantación</span>
+      </nav>
+
+      <header class="reg-head">
+        <span class="reg-kicker"><i class="fas fa-seedling"></i> Último paso antes de empezar</span>
+        <h1>Registra tu plantación</h1>
+        <p>
+          {% if user.first_name %}{{ user.first_name }}, n{% else %}N{% endif %}ecesitamos
+          algunos datos de tu finca para asociar cada análisis y enviarte alertas de tu zona.
+        </p>
+      </header>
+
+      {% if messages %}
+      <div class="reg-alerts">
+        {% for message in messages %}
+        <div class="reg-alert reg-alert-{{ message.tags|default:'info' }}">
+          <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+          <span>{{ message }}</span>
+          <button type="button" class="reg-alert-close" onclick="this.parentElement.remove();" aria-label="Cerrar">&times;</button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+      <div class="reg-alerts">
+        {% for error in form.non_field_errors %}
+        <div class="reg-alert reg-alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" class="reg-form" novalidate>
+        {% csrf_token %}
+
+        <!-- Paso 1 -->
+        <fieldset class="reg-step">
+          <legend><span class="step-badge">1</span> Datos de la finca</legend>
+
+          <div class="reg-grid">
+            <div class="field{% if form.nombre_finca.errors %} has-error{% endif %}">
+              <label for="{{ form.nombre_finca.id_for_label }}">
+                {{ form.nombre_finca.label }} <span class="req">*</span>
+              </label>
+              <div class="input-wrap">
+                <i class="fas fa-home input-icon"></i>
+                {{ form.nombre_finca }}
+              </div>
+              {% if form.nombre_finca.errors %}
+              <p class="field-error"><i class="fas fa-exclamation-circle"></i> {{ form.nombre_finca.errors|striptags }}</p>
+              {% endif %}
+            </div>
+
+            <div class="field{% if form.extension_hectareas.errors %} has-error{% endif %}">
+              <label for="{{ form.extension_hectareas.id_for_label }}">
+                Extensión <span class="req">*</span>
+              </label>
+              <div class="input-wrap has-suffix">
+                {{ form.extension_hectareas }}
+                <span class="input-suffix">ha</span>
+              </div>
+              {% if form.extension_hectareas.errors %}
+              <p class="field-error"><i class="fas fa-exclamation-circle"></i> {{ form.extension_hectareas.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Paso 2 -->
+        <fieldset class="reg-step">
+          <legend><span class="step-badge">2</span> Ubicación</legend>
+          <p class="step-help">
+            Marca tu finca en el mapa: haz clic, arrastra el pin o usa tu ubicación actual.
+            La dirección se completa sola y puedes ajustarla.
+          </p>
+
+          <div class="field{% if form.ubicacion.errors %} has-error{% endif %}">
+            <label for="{{ form.ubicacion.id_for_label }}">
+              {{ form.ubicacion.label }} <span class="req">*</span>
+            </label>
+            <div class="input-wrap">
+              <i class="fas fa-map-signs input-icon"></i>
+              {{ form.ubicacion }}
+            </div>
+            <p class="field-hint" id="address-status" aria-live="polite"></p>
+            {% if form.ubicacion.errors %}
+            <p class="field-error"><i class="fas fa-exclamation-circle"></i> {{ form.ubicacion.errors|striptags }}</p>
+            {% endif %}
+          </div>
+
+          <div class="coords" id="coords-box">
+            <div class="coords-state">
+              <span class="coords-dot"></span>
+              <span id="coords-label">Ubicación sin marcar</span>
+            </div>
+            <div class="coords-values">
+              <span>Lat <strong id="lat-display">—</strong></span>
+              <span>Lon <strong id="lon-display">—</strong></span>
+            </div>
+          </div>
+
+          <div class="map-slot" id="map-slot"></div>
+
+          {{ form.latitud }}
+          {{ form.longitud }}
+          {% if form.latitud.errors or form.longitud.errors %}
+          <p class="field-error field-error-block">
+            <i class="fas fa-exclamation-circle"></i>
+            {% if form.latitud.errors and form.longitud.errors %}Marca la ubicación de tu finca en el mapa.{% else %}{{ form.latitud.errors|striptags }} {{ form.longitud.errors|striptags }}{% endif %}
+          </p>
+          {% endif %}
+        </fieldset>
+
+        <div class="reg-actions">
+          <a href="{% url 'core:home' %}" class="r-btn r-btn-ghost">Cancelar</a>
+          <button type="submit" class="r-btn r-btn-primary">
+            Guardar plantación <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Mapa -->
+    <section class="reg-map" aria-label="Mapa para seleccionar la ubicación">
+      <div id="map"></div>
+      <button type="button" class="locate-btn" id="locate-btn">
+        <i class="fas fa-location-arrow"></i>
+        <span>Usar mi ubicación</span>
+      </button>
+      <div class="map-hint" id="map-hint">
+        <i class="fas fa-hand-pointer"></i> Haz clic en el mapa para marcar tu finca
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const latInput = document.getElementById("id_latitud");
+    const lonInput = document.getElementById("id_longitud");
+    const ubicacionInput = document.getElementById("id_ubicacion");
+    const latDisplay = document.getElementById("lat-display");
+    const lonDisplay = document.getElementById("lon-display");
+    const coordsBox = document.getElementById("coords-box");
+    const coordsLabel = document.getElementById("coords-label");
+    const addressStatus = document.getElementById("address-status");
+    const mapHint = document.getElementById("map-hint");
+    const locateBtn = document.getElementById("locate-btn");
+    const direccionUrl = "{% url 'core:obtener_direccion' %}";
+
+    // Si el usuario escribe la dirección a mano, no la sobrescribimos
+    let direccionManual = ubicacionInput.value.trim() !== "";
+    ubicacionInput.addEventListener("input", function () {
+      direccionManual = ubicacionInput.value.trim() !== "";
+    });
+
+    const hasCoords = latInput.value !== "" && lonInput.value !== "";
+    const start = hasCoords
+      ? [parseFloat(latInput.value), parseFloat(lonInput.value)]
+      : [-1.8312, -78.1834]; // Centro de Ecuador
+
+    const map = L.map("map", { zoomControl: false }).setView(start, hasCoords ? 15 : 7);
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+    }).addTo(map);
+
+    const pinIcon = L.divIcon({
+      className: "farm-pin",
+      html: '<span><i class="fas fa-seedling"></i></span>',
+      iconSize: [40, 48],
+      iconAnchor: [20, 46],
+    });
+
+    let marker = null;
+
+    function setPoint(lat, lon) {
+      if (!marker) {
+        marker = L.marker([lat, lon], { draggable: true, autoPan: true, icon: pinIcon }).addTo(map);
+        marker.on("dragend", function () {
+          const p = marker.getLatLng();
+          setPoint(p.lat, p.lng);
+        });
+      } else {
+        marker.setLatLng([lat, lon]);
+      }
+
+      latInput.value = lat.toFixed(6);
+      lonInput.value = lon.toFixed(6);
+      latDisplay.textContent = lat.toFixed(5);
+      lonDisplay.textContent = lon.toFixed(5);
+      coordsBox.classList.add("is-set");
+      coordsLabel.textContent = "Ubicación marcada";
+      mapHint.classList.add("is-hidden");
+
+      if (!direccionManual) buscarDireccion(lat, lon);
+    }
+
+    function buscarDireccion(lat, lon) {
+      addressStatus.textContent = "Buscando dirección…";
+      fetch(`${direccionUrl}?lat=${lat}&lon=${lon}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.direccion && !direccionManual) {
+            ubicacionInput.value = data.direccion;
+            addressStatus.textContent = "Dirección sugerida a partir del mapa. Puedes editarla.";
+          } else {
+            addressStatus.textContent = "";
+          }
+        })
+        .catch(() => {
+          addressStatus.textContent = "No pudimos obtener la dirección; escríbela manualmente.";
+        });
+    }
+
+    L.Control.geocoder({
+      defaultMarkGeocode: false,
+      placeholder: "Buscar ciudad, recinto o vía…",
+      errorMessage: "No se encontró la ubicación",
+      position: "topleft",
+    })
+      .on("markgeocode", function (e) {
+        const c = e.geocode.center;
+        map.setView(c, 15);
+        setPoint(c.lat, c.lng);
+      })
+      .addTo(map);
+
+    map.on("click", function (e) {
+      setPoint(e.latlng.lat, e.latlng.lng);
+    });
+
+    locateBtn.addEventListener("click", function () {
+      if (!navigator.geolocation) {
+        addressStatus.textContent = "Tu navegador no permite obtener la ubicación.";
+        return;
+      }
+      locateBtn.classList.add("is-loading");
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          locateBtn.classList.remove("is-loading");
+          const { latitude, longitude } = pos.coords;
+          map.setView([latitude, longitude], 16);
+          setPoint(latitude, longitude);
+        },
+        function () {
+          locateBtn.classList.remove("is-loading");
+          addressStatus.textContent = "No se pudo acceder a tu ubicación. Marca el punto en el mapa.";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+
+    // En pantallas pequeñas el mapa se muestra dentro del paso 2
+    const mapSection = document.querySelector(".reg-map");
+    const mapSlot = document.getElementById("map-slot");
+    const layout = document.querySelector(".reg-layout");
+    const mq = window.matchMedia("(max-width: 960px)");
+    function placeMap() {
+      if (mq.matches) mapSlot.appendChild(mapSection);
+      else layout.appendChild(mapSection);
+      map.invalidateSize();
+    }
+    mq.addEventListener("change", placeMap);
+    placeMap();
+
+    // Al volver con errores, conservar el punto ya elegido
+    if (hasCoords) setPoint(start[0], start[1]);
+
+    setTimeout(() => map.invalidateSize(), 250);
+  });
+</script>
+{% endblock %}

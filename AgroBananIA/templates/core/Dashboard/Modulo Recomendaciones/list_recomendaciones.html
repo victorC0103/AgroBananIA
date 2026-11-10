@@ -1,0 +1,672 @@
+{% extends 'components/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Manejo y Recomendaciones de Enfermedades{% endblock %}
+{% block breadcrumb %}Enfermedades{% endblock %}
+{% block page_title %}Manejo y Recomendaciones{% endblock %}
+{% block page_description %}Recomendaciones de manejo para enfermedades detectadas{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core/Dashboard/Modulo_Recomendaciones/list_recomendaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include 'includes/page_header.html' with title="Manejo de enfermedades" subtitle="Protocolos de control para cada enfermedad del banano, con fuentes científicas" eyebrow="Recomendaciones" icon="book" %}
+
+<!-- Statistics Row -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Total Enfermedades</div>
+    <div class="stat-value">6</div>
+    <div class="stat-trend">Monitoreadas activamente</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Alta Severidad</div>
+    <div class="stat-value">3</div>
+    <div class="stat-trend up">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+      </svg>
+      Requieren atención
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Protocolos de manejo</div>
+    <div class="stat-value">6</div>
+    <div class="stat-trend">Uno por cada clase</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Fuentes Científicas</div>
+    <div class="stat-value">12</div>
+    <div class="stat-trend">Con enlace a la publicación</div>
+  </div>
+</div>
+
+<!-- Controls Section -->
+<div class="controls-section">
+  <div class="search-wrapper">
+    <div class="search-container">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input 
+        type="text" 
+        class="search-input" 
+        id="searchInput"
+        placeholder="Buscar por nombre de enfermedad o agente patógeno..."
+        autocomplete="off"
+      />
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-chips">
+      <button class="filter-chip active" data-severity="all">
+        Todas las Enfermedades
+      </button>
+      <button class="filter-chip" data-severity="high">
+        Alta Severidad
+      </button>
+      <button class="filter-chip" data-severity="medium">
+        Media Severidad
+      </button>
+      <button class="filter-chip" data-severity="low">
+        Referencia Saludable
+      </button>
+    </div>
+    
+    <div class="results-info" id="resultsInfo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      <span id="resultsCount">Mostrando 6 de 6 enfermedades</span>
+    </div>
+  </div>
+</div>
+
+<!-- Diseases Grid -->
+<div class="diseases-grid" id="diseasesGrid">
+  
+  <!-- Black Sigatoka -->
+  <div class="disease-card" data-severity="high" style="animation-delay: 0s">
+    <div class="card-header">
+      <div class="disease-title-wrapper">
+        <div class="disease-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+            <path d="M2 17L12 22L22 17"/>
+            <path d="M2 12L12 17L22 12"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="disease-name">Sigatoka negra</h3>
+          <div class="scientific-name">Pseudocercospora fijiensis</div>
+        </div>
+      </div>
+      <span class="severity-badge severity-high">Severidad Alta</span>
+    </div>
+
+    <div class="card-body">
+      <p class="disease-description">
+        Enfermedad fúngica foliar más devastadora del banano a nivel mundial. Causa pérdidas de hasta 50% en rendimiento y requiere aplicaciones intensivas de fungicidas.
+      </p>
+
+      <div class="management-section expanded">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11L12 14L22 4"/>
+              <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16"/>
+            </svg>
+          </div>
+          <h4 class="section-title">Manejo Integrado</h4>
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <ul class="management-list">
+          <li>Remover hojas gravemente afectadas (defoliación sanitaria)</li>
+          <li>Aplicar fungicidas sistémicos (triazoles) alternados con protectantes</li>
+          <li>Mejorar ventilación del cultivo y drenaje para reducir humedad</li>
+          <li>Utilizar variedades resistentes cuando estén disponibles</li>
+          <li>Monitoreo semanal de síntomas para detección temprana</li>
+        </ul>
+      </div>
+
+      <div class="sources-section">
+        <div class="sources-header">
+          <div class="sources-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5A2.5 2.5 0 014 19.5V4.5A2.5 2.5 0 016.5 2Z"/>
+            </svg>
+          </div>
+          <h4 class="sources-title">Fuentes Científicas Verificadas</h4>
+        </div>
+        <div class="sources-list">
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6693783/" class="source-link" target="_blank">
+            PMC - Black Sigatoka Ecoclimatic Assessment
+          </a>
+          <a href="https://royalsocietypublishing.org/doi/10.1098/rstb.2018.0269" class="source-link" target="_blank">
+            Royal Society - Climate Change Effects
+          </a>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8453767/" class="source-link" target="_blank">
+            PMC - Sources of Resistance
+          </a>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Ver Protocolo
+        </button>
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Moko Disease -->
+  <div class="disease-card" data-severity="high" style="animation-delay: 0.1s">
+    <div class="card-header">
+      <div class="disease-title-wrapper">
+        <div class="disease-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2V6M12 18V22M22 12H18M6 12H2"/>
+            <path d="M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="disease-name">Moko</h3>
+          <div class="scientific-name">Ralstonia solanacearum</div>
+        </div>
+      </div>
+      <span class="severity-badge severity-high">Severidad Alta</span>
+    </div>
+
+    <div class="card-body">
+      <p class="disease-description">
+        Marchitamiento bacteriano devastador transmitido por insectos y herramientas contaminadas. Endémico en Centro y Sudamérica, se ha extendido a Filipinas y Malasia.
+      </p>
+
+      <div class="management-section expanded">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
+              <path d="M12 16V12M12 8H12.01"/>
+            </svg>
+          </div>
+          <h4 class="section-title">Control Bacteriano</h4>
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <ul class="management-list">
+          <li>Erradicar plantas infectadas y material vegetal circundante</li>
+          <li>Desinfectar herramientas con hipoclorito de sodio al 1%</li>
+          <li>Control de insectos vectores en inflorescencias</li>
+          <li>Evitar heridas en plantas durante labores culturales</li>
+          <li>Usar variedades Cavendish (menos susceptibles)</li>
+          <li>Cuarentena estricta de material vegetal</li>
+        </ul>
+      </div>
+
+      <div class="sources-section">
+        <div class="sources-header">
+          <div class="sources-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5A2.5 2.5 0 014 19.5V4.5A2.5 2.5 0 016.5 2Z"/>
+            </svg>
+          </div>
+          <h4 class="sources-title">Fuentes Científicas Verificadas</h4>
+        </div>
+        <div class="sources-list">
+          <a href="https://apsjournals.apsnet.org/doi/abs/10.1094/PHYTO-06-24-0190-R" class="source-link" target="_blank">
+            Phytopathology - PCR Diagnostic Assays
+          </a>
+          <a href="https://apps.lucidcentral.org/pppw_v11/text/web_full/entities/banana_moko_disease_525.htm" class="source-link" target="_blank">
+            Lucid Central - Banana Moko Disease
+          </a>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Ver Protocolo
+        </button>
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panama Disease -->
+  <div class="disease-card" data-severity="high" style="animation-delay: 0.2s">
+    <div class="card-header">
+      <div class="disease-title-wrapper">
+        <div class="disease-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+            <path d="M2 17L12 22L22 17"/>
+            <path d="M2 12L12 17L22 12"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="disease-name">Mal de Panamá</h3>
+          <div class="scientific-name">Fusarium oxysporum f. sp. cubense</div>
+        </div>
+      </div>
+      <span class="severity-badge severity-high">Severidad Alta</span>
+    </div>
+
+    <div class="card-body">
+      <p class="disease-description">
+        Marchitamiento vascular causado por hongo del suelo. La raza tropical 4 (TR4) es altamente agresiva y amenaza la producción mundial de banano Cavendish.
+      </p>
+
+      <div class="management-section expanded">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z"/>
+            </svg>
+          </div>
+          <h4 class="section-title">Manejo Preventivo</h4>
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <ul class="management-list">
+          <li>Usar material vegetal certificado libre de patógeno</li>
+          <li>Implementar cuarentena estricta en áreas libres</li>
+          <li>Desinfección de calzado y herramientas</li>
+          <li>Mejorar drenaje y evitar encharcamientos</li>
+          <li>Rotación con cultivos no susceptibles</li>
+          <li>Aplicación de microorganismos biocontroladores</li>
+        </ul>
+      </div>
+
+      <div class="sources-section">
+        <div class="sources-header">
+          <div class="sources-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5A2.5 2.5 0 014 19.5V4.5A2.5 2.5 0 016.5 2Z"/>
+            </svg>
+          </div>
+          <h4 class="sources-title">Fuentes Científicas Verificadas</h4>
+        </div>
+        <div class="sources-list">
+          <a href="https://www.cabi.org/isc/datasheet/24623" class="source-link" target="_blank">
+            CABI - Fusarium Wilt Management
+          </a>
+          <a href="http://www.fao.org/panama-disease" class="source-link" target="_blank">
+            FAO - Panama Disease TR4 Guidelines
+          </a>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Ver Protocolo
+        </button>
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yellow Sigatoka -->
+  <div class="disease-card" data-severity="medium" style="animation-delay: 0.3s">
+    <div class="card-header">
+      <div class="disease-title-wrapper">
+        <div class="disease-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8V12L15 15"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="disease-name">Sigatoka amarilla</h3>
+          <div class="scientific-name">Mycosphaerella musicola</div>
+        </div>
+      </div>
+      <span class="severity-badge severity-medium">Severidad Media</span>
+    </div>
+
+    <div class="card-body">
+      <p class="disease-description">
+        Enfermedad fúngica foliar menos agresiva que la Sigatoka Negra pero de amplia distribución. Produce esporas asexuales principalmente.
+      </p>
+
+      <div class="management-section expanded">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+          <h4 class="section-title">Control Foliar</h4>
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <ul class="management-list">
+          <li>Poda sanitaria de hojas afectadas</li>
+          <li>Aplicación preventiva de fungicidas protectantes</li>
+          <li>Mejorar circulación de aire en plantación</li>
+          <li>Reducir humedad relativa mediante drenaje</li>
+          <li>Monitoreo regular de síntomas foliares</li>
+          <li>Fertilización balanceada para fortalecer plantas</li>
+        </ul>
+      </div>
+
+      <div class="sources-section">
+        <div class="sources-header">
+          <div class="sources-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5A2.5 2.5 0 014 19.5V4.5A2.5 2.5 0 016.5 2Z"/>
+            </svg>
+          </div>
+          <h4 class="sources-title">Fuentes Científicas Verificadas</h4>
+        </div>
+        <div class="sources-list">
+          <a href="https://cms.ctahr.hawaii.edu/wangkh/Research-and-Extension/Banana-IPM/Guidebook/CHPT2-BLS" class="source-link" target="_blank">
+            University of Hawaii - Sigatoka Disease Guide
+          </a>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Ver Protocolo
+        </button>
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insect Pest -->
+  <div class="disease-card" data-severity="medium" style="animation-delay: 0.4s">
+    <div class="card-header">
+      <div class="disease-title-wrapper">
+        <div class="disease-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 2V5M16 2V5"/>
+            <ellipse cx="12" cy="12" rx="4" ry="6"/>
+            <path d="M8 9L5 7M16 9L19 7M8 15L5 17M16 15L19 17"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="disease-name">Daño por plagas</h3>
+          <div class="scientific-name">Complejo de plagas insectiles</div>
+        </div>
+      </div>
+      <span class="severity-badge severity-medium">Severidad Media</span>
+    </div>
+
+    <div class="card-body">
+      <p class="disease-description">
+        Daños causados por diversos insectos plaga incluyendo áfidos, thrips, cochinillas y perforadores del pseudotallo que facilitan infecciones secundarias.
+      </p>
+
+      <div class="management-section expanded">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86"/>
+              <path d="M22 4L12 14.01L9 11.01"/>
+            </svg>
+          </div>
+          <h4 class="section-title">Manejo Integrado de Plagas</h4>
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <ul class="management-list">
+          <li>Monitoreo regular con trampas e inspección visual</li>
+          <li>Control biológico con enemigos naturales</li>
+          <li>Aplicación selectiva de insecticidas cuando necesario</li>
+          <li>Eliminación de hospederos alternativos</li>
+          <li>Mantener diversidad vegetal para fauna benéfica</li>
+          <li>Tratamiento de heridas para prevenir infecciones</li>
+        </ul>
+      </div>
+
+      <div class="sources-section">
+        <div class="sources-header">
+          <div class="sources-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5A2.5 2.5 0 014 19.5V4.5A2.5 2.5 0 016.5 2Z"/>
+            </svg>
+          </div>
+          <h4 class="sources-title">Fuentes Científicas Verificadas</h4>
+        </div>
+        <div class="sources-list">
+          <a href="https://www.cabi.org/ipm" class="source-link" target="_blank">
+            CABI - Banana Pest Management
+          </a>
+          <a href="https://www.fao.org/agriculture/crops/ipm" class="source-link" target="_blank">
+            IPM Guidelines for Banana
+          </a>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Ver Protocolo
+        </button>
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Healthy Leaf -->
+  <div class="disease-card" data-severity="low" style="animation-delay: 0.5s">
+    <div class="card-header">
+      <div class="disease-title-wrapper">
+        <div class="disease-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86"/>
+            <path d="M22 4L12 14.01L9 11.01"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="disease-name">Hoja sana</h3>
+          <div class="scientific-name">Estado sanitario óptimo</div>
+        </div>
+      </div>
+      <span class="severity-badge severity-low">Referencia Saludable</span>
+    </div>
+
+    <div class="card-body">
+      <p class="disease-description">
+        Hojas sanas sin síntomas de enfermedades. Sirve como referencia para comparar con tejidos afectados y evaluar la efectividad de tratamientos.
+      </p>
+
+      <div class="management-section expanded">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+          <h4 class="section-title">Mantenimiento Preventivo</h4>
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <ul class="management-list">
+          <li>Nutrición balanceada según análisis de suelo</li>
+          <li>Riego adecuado sin excesos ni deficiencias</li>
+          <li>Manejo apropiado del espaciamiento</li>
+          <li>Poda sanitaria preventiva regular</li>
+          <li>Monitoreo constante de síntomas</li>
+          <li>Registros detallados del estado sanitario</li>
+        </ul>
+      </div>
+
+      <div class="sources-section">
+        <div class="sources-header">
+          <div class="sources-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5A2.5 2.5 0 014 19.5V4.5A2.5 2.5 0 016.5 2Z"/>
+            </svg>
+          </div>
+          <h4 class="sources-title">Fuentes Científicas Verificadas</h4>
+        </div>
+        <div class="sources-list">
+          <a href="https://www.fao.org/banana-production" class="source-link" target="_blank">
+            Best Practices in Banana Production
+          </a>
+          <a href="https://www.sustainability-banana.org" class="source-link" target="_blank">
+            Sustainable Banana Cultivation
+          </a>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Ver Protocolo
+        </button>
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" id="emptyState" style="display: none;">
+  <div class="empty-icon">🔍</div>
+  <h3 class="empty-title">No se encontraron resultados</h3>
+  <p class="empty-description">
+    Intenta buscar con otros términos o ajusta los filtros de severidad
+  </p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const filterChips = document.querySelectorAll('.filter-chip');
+  const diseaseCards = document.querySelectorAll('.disease-card');
+  const resultsCount = document.getElementById('resultsCount');
+  const emptyState = document.getElementById('emptyState');
+  const diseasesGrid = document.getElementById('diseasesGrid');
+
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  // Search functionality
+  searchInput.addEventListener('input', function(e) {
+    currentSearch = e.target.value.toLowerCase();
+    filterCards();
+  });
+
+  // Filter chips
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', function() {
+      filterChips.forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.severity;
+      filterCards();
+    });
+  });
+
+  // Filter cards function
+  function filterCards() {
+    let visibleCount = 0;
+    const totalCount = diseaseCards.length;
+
+    diseaseCards.forEach(card => {
+      const diseaseName = card.querySelector('.disease-name').textContent.toLowerCase();
+      const scientificName = card.querySelector('.scientific-name').textContent.toLowerCase();
+      const severity = card.dataset.severity;
+
+      const matchesSearch = diseaseName.includes(currentSearch) || 
+                          scientificName.includes(currentSearch);
+      const matchesFilter = currentFilter === 'all' || severity === currentFilter;
+
+      if (matchesSearch && matchesFilter) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update counter
+    resultsCount.textContent = `Mostrando ${visibleCount} de ${totalCount} enfermedades`;
+
+    // Show/hide empty state
+    if (visibleCount === 0) {
+      diseasesGrid.style.display = 'none';
+      emptyState.style.display = 'block';
+    } else {
+      diseasesGrid.style.display = 'grid';
+      emptyState.style.display = 'none';
+    }
+  }
+});
+
+// Toggle section function
+function toggleSection(header) {
+  const section = header.parentElement;
+  section.classList.toggle('expanded');
+}
+</script>
+
+{% endblock %}

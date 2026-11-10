@@ -1,0 +1,463 @@
+{% extends 'components/base_dashboard.html' %}
+{% load static agro_tags %}
+
+{% block title %}Detalle del Análisis - AgroBananIA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core/Dashboard/Modulo Deteccion Enfermedades/detalle_analisis.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="detail-page">
+  
+  <header class="ph">
+    <div class="ph-main">
+      <a href="{% url 'core:deteccion_list' %}" class="ph-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        Volver al historial
+      </a>
+      <div class="ph-row">
+        <div class="ph-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+        </div>
+        <div class="ph-text">
+          <span class="ph-eyebrow">Análisis #{{ resultado_id|stringformat:"04d" }}</span>
+          <h1 class="ph-title">Resultado del análisis</h1>
+          <p class="ph-subtitle">Realizado el {{ fecha_analisis|date:"j \d\e F \d\e Y, H:i" }}</p>
+        </div>
+      </div>
+    </div>
+    <a href="{% url 'core:deteccion_analizar' %}" class="ph-action">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo análisis
+    </a>
+  </header>
+
+  <!-- Main Content -->
+  <div class="detail-content">
+    
+    <!-- Left Column -->
+    <div class="detail-left">
+      
+      <!-- Diagnosis Card -->
+      <div class="diagnosis-card-detail">
+        <div class="diagnosis-header">
+          <div class="diagnosis-badge-wrapper">
+            <span class="diagnosis-label">Diagnóstico Principal</span>
+            <div class="diagnosis-badge-large diagnosis-badge-{% if diagnostico|severidad == 'normal' %}success{% elif diagnostico|severidad == 'warning' %}warning{% else %}danger{% endif %}">
+              <div class="badge-icon-large">
+                {% if diagnostico|severidad == 'normal' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {% elif diagnostico|severidad == 'warning' %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                {% else %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                {% endif %}
+              </div>
+              <h2 class="diagnosis-name">{{ diagnostico|nombre_es }}</h2>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidence Score -->
+        <div class="confidence-section-detail">
+          <div class="confidence-header-detail">
+            <h3>Nivel de Confianza</h3>
+            <div class="confidence-percentage-display">
+              <span class="percentage-number">{{ probabilidad|floatformat:1 }}</span>
+              <span class="percentage-symbol">%</span>
+            </div>
+          </div>
+
+          <!-- Radial Progress -->
+          <div class="radial-progress-wrapper">
+            <svg class="radial-progress" viewBox="0 0 180 180">
+              <circle class="radial-bg" cx="90" cy="90" r="75"/>
+              <circle class="radial-fill radial-{% if probabilidad >= 80 %}success{% elif probabilidad >= 60 %}warning{% else %}danger{% endif %}" 
+                      cx="90" cy="90" r="75"
+                      style="--progress: {{ probabilidad|css_num }}"/>
+            </svg>
+            <div class="radial-center">
+              <div class="radial-icon">
+                {% if probabilidad >= 80 %}
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                {% elif probabilidad >= 60 %}
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                {% else %}
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                {% endif %}
+              </div>
+              <p class="radial-label">
+                {% if probabilidad >= 80 %}
+                Alta Precisión
+                {% elif probabilidad >= 60 %}
+                Confianza Media
+                {% else %}
+                Requiere Revisión
+                {% endif %}
+              </p>
+            </div>
+          </div>
+
+          <!-- Linear Progress Bar -->
+          <div class="linear-progress-container">
+            <div class="progress-track-detail">
+              <div class="progress-fill-detail progress-{% if probabilidad >= 80 %}success{% elif probabilidad >= 60 %}warning{% else %}danger{% endif %}"
+                   style="width: {{ probabilidad|css_num }}%"></div>
+            </div>
+            <div class="progress-markers">
+              <span class="marker">0%</span>
+              <span class="marker">25%</span>
+              <span class="marker">50%</span>
+              <span class="marker">75%</span>
+              <span class="marker">100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis Metadata -->
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <div class="metadata-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="metadata-content">
+              <span class="metadata-label">Fecha de Análisis</span>
+              <span class="metadata-value">{{ fecha_analisis }}</span>
+            </div>
+          </div>
+
+          <div class="metadata-item">
+            <div class="metadata-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="metadata-content">
+              <span class="metadata-label">Clase del modelo</span>
+              <span class="metadata-value">{{ diagnostico }}</span>
+            </div>
+          </div>
+
+          <div class="metadata-item">
+            <div class="metadata-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div class="metadata-content">
+              <span class="metadata-label">Modelo de IA</span>
+              <span class="metadata-value">{{ modelo_usado|default:"RESNET50" }}</span>
+            </div>
+          </div>
+
+          <div class="metadata-item">
+            <div class="metadata-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="metadata-content">
+              <span class="metadata-label">Estado</span>
+              <span class="metadata-value status-completed">Completado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations Card -->
+      <div class="recommendations-card-detail">
+        <div class="card-header-recommendations">
+          <div class="header-icon-recommendations">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <h3 class="header-title-recommendations">Recomendaciones de Tratamiento</h3>
+        </div>
+        <div class="recommendations-body">
+          <div class="recommendation-content">
+            {{ recomendaciones|safe }}
+          </div>
+          
+          
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column - Image Gallery -->
+    <div class="detail-right">
+      <div class="gallery-card-detail">
+        <div class="gallery-header-detail">
+          <div class="gallery-title-wrapper">
+            <div class="gallery-icon-header">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Galería de Análisis Visual</h3>
+              <p>Imágenes procesadas con IA</p>
+            </div>
+          </div>
+          <span class="images-count">{{ imagenes|length|add:1 }} imagen{% if imagenes|length > 0 %}es{% endif %}</span>
+        </div>
+
+        <div class="gallery-grid-detail">
+          
+          <!-- Original Image -->
+          <div class="gallery-item-detail featured" onclick="openModal('{{ imagen_url }}', 'Imagen Original')">
+            <div class="gallery-item-wrapper">
+              <img src="{{ imagen_url }}" alt="Imagen Original" loading="lazy" />
+              <div class="gallery-overlay">
+                <div class="overlay-content">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                  <span>Ver en grande</span>
+                </div>
+              </div>
+              <div class="gallery-badge badge-original">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Original
+              </div>
+            </div>
+            <div class="gallery-item-footer">
+              <h4>Imagen Original</h4>
+              <p>Foto cargada para análisis</p>
+            </div>
+          </div>
+
+          <!-- Contour Image -->
+          {% if contorno_url %}
+          <div class="gallery-item-detail" onclick="openModal('{{ contorno_url }}', 'Análisis de Contorno')">
+            <div class="gallery-item-wrapper">
+              <img src="{{ contorno_url }}" alt="Contorno" loading="lazy" />
+              <div class="gallery-overlay">
+                <div class="overlay-content">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                  <span>Ver en grande</span>
+                </div>
+              </div>
+              <div class="gallery-badge badge-processed">Procesado</div>
+            </div>
+            <div class="gallery-item-footer">
+              <h4>Análisis de Contorno</h4>
+              <p>Bordes y contornos detectados</p>
+            </div>
+          </div>
+          {% else %}
+          <div class="gallery-item-detail empty">
+            <div class="empty-gallery-state">
+              <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4"/>
+                  <path d="M12 8h.01"/>
+                </svg>
+              </div>
+              <p>Contorno no disponible</p>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Overlay Image -->
+          {% if overlay_url %}
+          <div class="gallery-item-detail" onclick="openModal('{{ overlay_url }}', 'Superposición')">
+            <div class="gallery-item-wrapper">
+              <img src="{{ overlay_url }}" alt="Superposición" loading="lazy" />
+              <div class="gallery-overlay">
+                <div class="overlay-content">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                  <span>Ver en grande</span>
+                </div>
+              </div>
+              <div class="gallery-badge badge-analysis">Análisis</div>
+            </div>
+            <div class="gallery-item-footer">
+              <h4>Superposición de Análisis</h4>
+              <p>Áreas marcadas con IA</p>
+            </div>
+          </div>
+          {% else %}
+          <div class="gallery-item-detail empty">
+            <div class="empty-gallery-state">
+              <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4"/>
+                  <path d="M12 8h.01"/>
+                </svg>
+              </div>
+              <p>Superposición no disponible</p>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Damage Detection -->
+          {% if damage_url %}
+          <div class="gallery-item-detail" onclick="openModal('{{ damage_url }}', 'Detección de Daños')">
+            <div class="gallery-item-wrapper">
+              <img src="{{ damage_url }}" alt="Daños" loading="lazy" />
+              <div class="gallery-overlay">
+                <div class="overlay-content">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                  <span>Ver en grande</span>
+                </div>
+              </div>
+              <div class="gallery-badge badge-damage">Daños</div>
+            </div>
+            <div class="gallery-item-footer">
+              <h4>Detección de Daños</h4>
+              <p>Áreas problemáticas</p>
+            </div>
+          </div>
+          {% else %}
+          <div class="gallery-item-detail empty success">
+            <div class="empty-gallery-state">
+              <div class="empty-icon success">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <p>Sin daños detectados</p>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Action Footer -->
+  <div class="action-footer">
+    <div class="footer-left">
+      <a href="{% url 'core:deteccion_list' %}" class="btn-footer btn-back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Volver a la Lista
+      </a>
+    </div>
+    <div class="footer-right">
+      <a href="{% url 'core:deteccion_analizar' %}" class="btn-footer btn-new">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Realizar Nuevo Análisis
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="modal-detail" onclick="closeModal()">
+  <button class="modal-close-detail" onclick="closeModal(); event.stopPropagation();">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+  <div class="modal-content-detail" onclick="event.stopPropagation();">
+    <img id="modalImageDetail" alt="Vista ampliada" />
+    <div class="modal-caption-detail">
+      <p id="modalCaptionDetail"></p>
+    </div>
+  </div>
+</div>
+
+<script >
+    // Open modal
+function openModal(imageUrl, caption) {
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImageDetail');
+  const modalCaption = document.getElementById('modalCaptionDetail');
+  
+  modal.classList.add('active');
+  modalImage.src = imageUrl;
+  modalCaption.textContent = caption;
+  
+  // Prevent body scroll
+  document.body.style.overflow = 'hidden';
+}
+
+// Close modal
+function closeModal() {
+  const modal = document.getElementById('imageModal');
+  modal.classList.remove('active');
+  
+  // Restore body scroll
+  document.body.style.overflow = '';
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+// Animate progress on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const progressElements = document.querySelectorAll('.progress-fill-detail, .radial-fill');
+  
+  progressElements.forEach(element => {
+    const finalWidth = element.style.width || '0%';
+    element.style.width = '0%';
+    
+    setTimeout(() => {
+      element.style.width = finalWidth;
+    }, 300);
+  });
+});
+
+</script>
+
+{% endblock %}
